@@ -43,7 +43,7 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -58,10 +58,25 @@ export default function SignUpPage() {
           variant: 'destructive',
         })
       } else {
-        toast({
-          title: 'Success',
-          description: 'Please check your email to verify your account',
-        })
+        // Check if email confirmation is required
+        if (data.user && !data.session) {
+          toast({
+            title: 'Success',
+            description: 'Please check your email to verify your account',
+          })
+        } else if (data.session) {
+          // Auto-login if email confirmation is disabled
+          toast({
+            title: 'Success',
+            description: 'Account created successfully!',
+          })
+          router.push('/dashboard')
+        } else {
+          toast({
+            title: 'Success',
+            description: 'Account created! Please sign in.',
+          })
+        }
         router.push('/sign-in')
       }
     } catch {
