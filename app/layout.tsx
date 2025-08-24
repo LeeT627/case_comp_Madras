@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "File Upload App",
-  description: "Upload and manage your files",
+  title: "GPAI Case Competition",
+  description: "File submission platform for GPAI Case Competition participants",
 };
 
 export default function RootLayout({
