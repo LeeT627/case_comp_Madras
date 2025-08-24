@@ -87,9 +87,17 @@ export default function SignUpPage() {
         // Check if email confirmation is required
         if (data.user && !data.session) {
           toast({
-            title: 'Success',
-            description: 'Please check your email to verify your account. Also check your spam folder.',
+            title: 'Success - Check Your Email',
+            description: 'Please check your email to verify your account.',
           })
+          // Show additional warning about spam folder
+          setTimeout(() => {
+            toast({
+              title: '⚠️ Important',
+              description: "If you don't see your verification email, please check your spam folder.",
+              variant: 'destructive',
+            })
+          }, 1000)
         } else if (data.session) {
           // Auto-login if email confirmation is disabled
           toast({

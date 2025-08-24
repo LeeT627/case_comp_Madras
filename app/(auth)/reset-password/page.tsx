@@ -62,7 +62,9 @@ export default function ResetPasswordPage() {
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
               Please check your email and click on the reset link to create a new password.
-              If you don&apos;t see the email, check your spam folder.
+            </p>
+            <p className="text-sm font-medium text-red-600">
+              If you don&apos;t see your verification email, please check your spam folder.
             </p>
           </CardContent>
           <CardFooter>

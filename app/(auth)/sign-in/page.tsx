@@ -189,8 +189,8 @@ export default function SignInPage() {
             <p className="text-sm text-muted-foreground">
               Click the link in your email to sign in. 
             </p>
-            <p className="text-sm font-medium text-muted-foreground">
-              ⚠️ Please check your spam folder if you don&apos;t see the email in your inbox.
+            <p className="text-sm font-medium text-red-600">
+              If you don&apos;t see your verification email, please check your spam folder.
             </p>
           </CardContent>
           <CardFooter>
