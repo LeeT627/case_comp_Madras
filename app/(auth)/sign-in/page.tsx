@@ -215,6 +215,9 @@ export default function SignInPage() {
           <CardDescription>
             Use the same school email address registered on www.gpai.app
           </CardDescription>
+          <p className="text-sm font-medium text-red-600 mt-2">
+            Please use your school email used to sign up to gpai.app. Other addresses will not be able to enter competition.
+          </p>
         </CardHeader>
         <form onSubmit={handleSignIn}>
           <CardContent className="space-y-4">

@@ -122,8 +122,11 @@ export default function SignUpPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">GPAI Case Competition - Create Account</CardTitle>
           <CardDescription>
-            You must use the same school email address used to sign up to www.gpai.app. Otherwise, you will not be able to enter competition.
+            Only registered GPAI Competition participants can create accounts. Use your registered email address.
           </CardDescription>
+          <p className="text-sm font-medium text-red-600 mt-2">
+            Please use your school email used to sign up to gpai.app. Other addresses will not be able to enter competition.
+          </p>
         </CardHeader>
         <form onSubmit={handleSignUp}>
           <CardContent className="space-y-4">
