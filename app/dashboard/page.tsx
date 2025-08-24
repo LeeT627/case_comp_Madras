@@ -9,27 +9,17 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 
-interface UploadedFile {
-  id: string
-  name: string
-  size: number
-  created_at: string
-  url: string
-}
-
 export default function DashboardPage() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [loading, setLoading] = useState(true)
+  const [currentFileName, setCurrentFileName] = useState<string | null>(null)
   const router = useRouter()
   const { toast } = useToast()
   const supabase = createClient()
 
   useEffect(() => {
     checkUser()
-    fetchUploadedFiles()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkUser = async () => {
@@ -46,46 +36,6 @@ export default function DashboardPage() {
     }
   }
 
-  const fetchUploadedFiles = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
-      const { data, error } = await supabase
-        .storage
-        .from('uploads')
-        .list(user.id, {
-          limit: 100,
-          offset: 0,
-        })
-
-      if (error) {
-        console.error('Error fetching files:', error)
-      } else if (data) {
-        const filesWithUrls = await Promise.all(
-          data.map(async (file) => {
-            const { data: { publicUrl } } = supabase
-              .storage
-              .from('uploads')
-              .getPublicUrl(`${user.id}/${file.name}`)
-            
-            return {
-              id: file.id || file.name,
-              name: file.name,
-              size: file.metadata?.size || 0,
-              created_at: file.created_at || new Date().toISOString(),
-              url: publicUrl,
-            }
-          })
-        )
-        setUploadedFiles(filesWithUrls)
-      }
-    } catch (error) {
-      console.error('Error fetching files:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -120,6 +70,22 @@ export default function DashboardPage() {
 
     setUploading(true)
     try {
+      // First, delete all existing files for this user
+      const { data: existingFiles } = await supabase.storage
+        .from('uploads')
+        .list(user.id, {
+          limit: 100,
+          offset: 0,
+        })
+
+      if (existingFiles && existingFiles.length > 0) {
+        const filesToDelete = existingFiles.map(f => `${user.id}/${f.name}`)
+        await supabase.storage
+          .from('uploads')
+          .remove(filesToDelete)
+      }
+
+      // Now upload the new file
       const fileName = `${Date.now()}-${file.name}`
       const filePath = `${user.id}/${fileName}`
 
@@ -136,8 +102,12 @@ export default function DashboardPage() {
         description: 'File uploaded successfully',
       })
 
+      setCurrentFileName(file.name)
       setFile(null)
-      fetchUploadedFiles()
+      
+      // Reset file input
+      const fileInput = document.getElementById('file') as HTMLInputElement
+      if (fileInput) fileInput.value = ''
     } catch (error) {
       toast({
         title: 'Upload failed',
@@ -162,15 +132,6 @@ export default function DashboardPage() {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -185,9 +146,9 @@ export default function DashboardPage() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Upload File</CardTitle>
+              <CardTitle>Upload Submission</CardTitle>
               <CardDescription>
-                Upload PDF or PowerPoint files (max 20MB)
+                Upload your case competition submission (PDF or PowerPoint, max 20MB)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -206,19 +167,30 @@ export default function DashboardPage() {
                   Selected: {file.name} ({formatFileSize(file.size)})
                 </div>
               )}
+              {currentFileName && !file && (
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm font-medium text-green-800">Current Submission:</p>
+                  <p className="text-sm text-green-700">{currentFileName}</p>
+                </div>
+              )}
               <Button 
                 onClick={handleUpload} 
                 disabled={!file || uploading}
                 className="w-full"
               >
-                {uploading ? 'Uploading...' : 'Upload File'}
+                {uploading ? 'Uploading...' : currentFileName ? 'Replace Submission' : 'Upload Submission'}
               </Button>
+              {currentFileName && (
+                <p className="text-xs text-muted-foreground text-center">
+                  ⚠️ Uploading a new file will replace your current submission
+                </p>
+              )}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Deadline</CardTitle>
+              <CardTitle>Competition Deadline</CardTitle>
               <CardDescription>
                 Important dates and deadlines
               </CardDescription>
@@ -227,58 +199,18 @@ export default function DashboardPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
                   <div>
-                    <p className="font-medium">Submission Deadline</p>
-                    <p className="text-sm text-muted-foreground">Final submission date</p>
+                    <p className="font-medium">Final Submission Deadline</p>
+                    <p className="text-sm text-muted-foreground">Last date to submit</p>
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-semibold">TBD</p>
-                    <p className="text-sm text-muted-foreground">To be determined</p>
+                    <p className="text-sm text-muted-foreground">To be announced</p>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
-
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Uploaded Files</CardTitle>
-            <CardDescription>
-              Your previously uploaded files
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <p className="text-muted-foreground">Loading files...</p>
-            ) : uploadedFiles.length === 0 ? (
-              <p className="text-muted-foreground">No files uploaded yet</p>
-            ) : (
-              <div className="space-y-2">
-                {uploadedFiles.map((file) => (
-                  <div
-                    key={file.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-secondary/50 transition-colors"
-                  >
-                    <div>
-                      <p className="font-medium">{file.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatFileSize(file.size)} • {formatDate(file.created_at)}
-                      </p>
-                    </div>
-                    <a
-                      href={file.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline text-sm"
-                    >
-                      View
-                    </a>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
     </div>
   )
