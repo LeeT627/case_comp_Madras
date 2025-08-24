@@ -22,7 +22,7 @@ export async function GET() {
       table.toLowerCase().includes('team')
     )
     
-    let tableStructures: any = {}
+    const tableStructures: Record<string, Array<{column_name: string; data_type: string; is_nullable: string}>> = {}
     
     for (const table of userTables) {
       const structureQuery = `
@@ -41,12 +41,12 @@ export async function GET() {
       userRelatedTables: userTables,
       tableStructures: tableStructures
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Database check error:', error)
     return NextResponse.json(
       { 
         error: 'Database connection failed', 
-        details: error.message 
+        details: error instanceof Error ? error.message : 'Unknown error' 
       },
       { status: 500 }
     )
