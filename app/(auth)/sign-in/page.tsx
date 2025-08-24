@@ -23,17 +23,48 @@ export default function SignInPage() {
     setLoading(true)
 
     try {
+      // First, verify user exists in GPAI database
+      const verifyResponse = await fetch('/api/auth/verify-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const verifyData = await verifyResponse.json()
+
+      if (!verifyData.verified) {
+        toast({
+          title: 'Access Denied',
+          description: verifyData.message || 'You must be registered in the GPAI Competition to access this platform.',
+          variant: 'destructive',
+        })
+        setLoading(false)
+        return
+      }
+
+      // If verified in GPAI database, proceed with Supabase authentication
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        })
+        // If sign in fails, it might be because they haven't created an account yet
+        if (error.message.includes('Invalid login credentials')) {
+          toast({
+            title: 'First Time Login',
+            description: 'Please use the same password you registered with in GPAI, or click "Forgot Password" to set a new one.',
+            variant: 'destructive',
+          })
+        } else {
+          toast({
+            title: 'Error',
+            description: error.message,
+            variant: 'destructive',
+          })
+        }
       } else {
         toast({
           title: 'Success',

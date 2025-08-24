@@ -43,11 +43,37 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
+      // First, verify user exists in GPAI database
+      const verifyResponse = await fetch('/api/auth/verify-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const verifyData = await verifyResponse.json()
+
+      if (!verifyData.verified) {
+        toast({
+          title: 'Registration Not Allowed',
+          description: 'Only users registered in the GPAI Competition can create accounts. Please register at the main GPAI website first.',
+          variant: 'destructive',
+        })
+        setLoading(false)
+        return
+      }
+
+      // If verified in GPAI database, create Supabase account
       const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            gpai_verified: true,
+            gpai_user_id: verifyData.user?.id
+          }
         },
       })
 
@@ -94,9 +120,9 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+          <CardTitle className="text-2xl font-bold">GPAI Competition - Create Account</CardTitle>
           <CardDescription>
-            Enter your email and password to create your account
+            Only registered GPAI Competition participants can create accounts. Use your registered email address.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSignUp}>
