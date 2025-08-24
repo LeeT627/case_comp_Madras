@@ -41,7 +41,7 @@ export default function SignInPage() {
         })
         router.push('/dashboard')
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'An unexpected error occurred',
@@ -97,7 +97,7 @@ export default function SignInPage() {
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>
             <div className="text-sm text-center text-muted-foreground">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/sign-up" className="text-primary hover:underline">
                 Sign up
               </Link>

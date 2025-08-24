@@ -18,7 +18,7 @@ interface UploadedFile {
 }
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
@@ -30,7 +30,7 @@ export default function DashboardPage() {
   useEffect(() => {
     checkUser()
     fetchUploadedFiles()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkUser = async () => {
     try {
@@ -138,10 +138,10 @@ export default function DashboardPage() {
 
       setFile(null)
       fetchUploadedFiles()
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Upload failed',
-        description: error.message || 'Failed to upload file',
+        description: error instanceof Error ? error.message : 'Failed to upload file',
         variant: 'destructive',
       })
     } finally {

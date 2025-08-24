@@ -64,7 +64,7 @@ export default function SignUpPage() {
         })
         router.push('/sign-in')
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'An unexpected error occurred',
