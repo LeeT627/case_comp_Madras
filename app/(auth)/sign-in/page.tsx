@@ -187,7 +187,10 @@ export default function SignInPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Click the link in your email to sign in. If you don&apos;t see it, check your spam folder.
+              Click the link in your email to sign in. 
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">
+              ⚠️ Please check your spam folder if you don&apos;t see the email in your inbox.
             </p>
           </CardContent>
           <CardFooter>
@@ -210,17 +213,17 @@ export default function SignInPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">GPAI Competition - Sign In</CardTitle>
           <CardDescription>
-            Enter your registered GPAI email to access the platform
+            Use the same school email address registered on www.gpai.app
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSignIn}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">School Email Address</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="your.email@example.com"
+                placeholder="your.name@school.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

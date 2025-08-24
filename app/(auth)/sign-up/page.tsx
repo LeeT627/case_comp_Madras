@@ -88,7 +88,7 @@ export default function SignUpPage() {
         if (data.user && !data.session) {
           toast({
             title: 'Success',
-            description: 'Please check your email to verify your account',
+            description: 'Please check your email to verify your account. Also check your spam folder.',
           })
         } else if (data.session) {
           // Auto-login if email confirmation is disabled
@@ -122,22 +122,25 @@ export default function SignUpPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">GPAI Competition - Create Account</CardTitle>
           <CardDescription>
-            Only registered GPAI Competition participants can create accounts. Use your registered email address.
+            You must use the same school email address used to sign up to www.gpai.app. Otherwise, you will not be able to enter competition.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSignUp}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">School Email Address</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder="your.name@school.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
               />
+              <p className="text-xs text-muted-foreground">
+                ⚠️ Must be the same email used on www.gpai.app
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
