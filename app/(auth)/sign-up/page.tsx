@@ -160,21 +160,7 @@ export default function SignUpPage() {
                 type="email"
                 placeholder="your.name@school.edu"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  // Real-time validation feedback
-                  if (e.target.value) {
-                    const validation = validateEmail(e.target.value)
-                    if (!validation.isValid && e.target.value.includes('@')) {
-                      // Only show error if they've typed an @ (indicating they're done typing domain)
-                      toast({
-                        title: 'Email Notice',
-                        description: validation.error,
-                        variant: 'destructive',
-                      })
-                    }
-                  }
-                }}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
               />

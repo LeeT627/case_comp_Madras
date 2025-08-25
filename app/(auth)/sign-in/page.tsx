@@ -120,23 +120,7 @@ export default function SignInPage() {
                 type="email"
                 placeholder="your.name@school.edu"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  // Real-time validation feedback for common issues
-                  if (e.target.value && e.target.value.includes('@')) {
-                    const validation = validateEmail(e.target.value)
-                    if (!validation.isValid) {
-                      // Show inline feedback for blocked domains
-                      if (e.target.value.includes('gmail.com')) {
-                        toast({
-                          title: 'School Email Required',
-                          description: 'Please use your school email address instead of Gmail.',
-                          variant: 'destructive',
-                        })
-                      }
-                    }
-                  }
-                }}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
               />
