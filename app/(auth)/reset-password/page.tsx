@@ -52,7 +52,12 @@ export default function ResetPasswordPage() {
   if (emailSent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="w-full max-w-md">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">GPAI Case Competition</h1>
+            <p className="text-lg text-gray-600 mt-1">by TeamTuring</p>
+          </div>
+          <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
             <CardDescription>
@@ -75,13 +80,19 @@ export default function ResetPasswordPage() {
             </Link>
           </CardFooter>
         </Card>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">GPAI Case Competition</h1>
+          <p className="text-lg text-gray-600 mt-1">by TeamTuring</p>
+        </div>
+        <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Reset password</CardTitle>
           <CardDescription>
@@ -116,6 +127,7 @@ export default function ResetPasswordPage() {
           </CardFooter>
         </form>
       </Card>
+      </div>
     </div>
   )
 }

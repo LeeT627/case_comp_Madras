@@ -126,9 +126,14 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">GPAI Case Competition</h1>
+          <p className="text-lg text-gray-600 mt-1">by TeamTuring</p>
+        </div>
+        <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">GPAI Case Competition - Create Account</CardTitle>
+          <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
           <CardDescription>
             Only registered GPAI Competition participants can create accounts. Use your registered email address.
           </CardDescription>
@@ -191,6 +196,7 @@ export default function SignUpPage() {
           </CardFooter>
         </form>
       </Card>
+      </div>
     </div>
   )
 }
