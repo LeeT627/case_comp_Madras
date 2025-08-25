@@ -2,7 +2,7 @@ import { Pool } from 'pg'
 
 // Create a connection pool for better performance
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:turing1123@gpai.cluster-cnbeqlnoaeg9.us-west-2.rds.amazonaws.com:5432/production',
   ssl: {
     rejectUnauthorized: false // Required for AWS RDS
   },
