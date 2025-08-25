@@ -152,6 +152,9 @@ export default function SignInPage() {
                 Sign up
               </Link>
             </div>
+            <div className="text-sm text-center text-muted-foreground">
+              For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
+            </div>
           </CardFooter>
         </form>
       </Card>
