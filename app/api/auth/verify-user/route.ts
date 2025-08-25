@@ -12,6 +12,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if GPAI verification is disabled
+    if (process.env.SKIP_GPAI_VERIFICATION === 'true') {
+      console.log('GPAI verification skipped (SKIP_GPAI_VERIFICATION=true)')
+      return NextResponse.json({
+        verified: true,
+        user: null,
+        message: 'GPAI verification bypassed'
+      })
+    }
+
     // Check if user exists in GPAI database
     const exists = await verifyGPAIUser(email)
     
@@ -33,8 +43,8 @@ export async function POST(request: NextRequest) {
       user: user,
       message: 'User verified successfully'
     })
-  } catch {
-    // Error in verify-user route
+  } catch (error) {
+    console.error('Error in verify-user route:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

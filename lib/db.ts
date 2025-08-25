@@ -16,6 +16,8 @@ export default pool
 // Helper function to verify user exists in GPAI database
 export async function verifyGPAIUser(email: string): Promise<boolean> {
   try {
+    console.log(`Verifying GPAI user: ${email}`)
+    
     const query = `
       SELECT EXISTS(
         SELECT 1 FROM users 
@@ -23,23 +25,15 @@ export async function verifyGPAIUser(email: string): Promise<boolean> {
       ) as exists
     `
     const result = await pool.query(query, [email])
-    return result.rows[0]?.exists || false
-  } catch {
-    // Error verifying GPAI user
-    // You might want to check the actual table structure
-    // Let's try a more generic query
-    try {
-      const altQuery = `
-        SELECT COUNT(*) as count 
-        FROM users 
-        WHERE LOWER(email) = LOWER($1)
-      `
-      const altResult = await pool.query(altQuery, [email])
-      return (altResult.rows[0]?.count || 0) > 0
-    } catch {
-      // Alternative query also failed
-      return false
-    }
+    const exists = result.rows[0]?.exists || false
+    
+    console.log(`GPAI verification result for ${email}: ${exists}`)
+    return exists
+  } catch (error) {
+    console.error('Error verifying GPAI user:', error)
+    // Return false on error to maintain security
+    // Only registered GPAI users should be allowed
+    return false
   }
 }
 
@@ -47,15 +41,15 @@ export async function verifyGPAIUser(email: string): Promise<boolean> {
 export async function getGPAIUser(email: string) {
   try {
     const query = `
-      SELECT id, email, name, created_at 
+      SELECT id, email, "isGuest", "createdAt" 
       FROM users 
       WHERE LOWER(email) = LOWER($1)
       LIMIT 1
     `
     const result = await pool.query(query, [email])
     return result.rows[0] || null
-  } catch {
-    // Error getting GPAI user
+  } catch (error) {
+    console.error('Error getting GPAI user details:', error)
     return null
   }
 }
