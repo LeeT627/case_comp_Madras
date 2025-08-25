@@ -1,6 +1,6 @@
-# File Upload Application
+# GPAI Case Competition File Upload Platform
 
-A modern web application for file uploads with authentication, built with Next.js, Supabase, and Tailwind CSS.
+A secure file upload platform for GPAI Case Competition participants. Built with Next.js 14, Supabase, and Tailwind CSS.
 
 ## Features
 
