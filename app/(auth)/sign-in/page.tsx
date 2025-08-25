@@ -9,18 +9,31 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
+import { APP_NAME, APP_AUTHOR, AUTH_MESSAGES, ROUTES } from '@/lib/constants'
+import { validateEmail } from '@/lib/email-validation'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [magicLinkSent, setMagicLinkSent] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
   const supabase = createClient()
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate email first
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.isValid) {
+      toast({
+        title: 'Invalid Email',
+        description: emailValidation.error,
+        variant: 'destructive',
+      })
+      return
+    }
+    
     setLoading(true)
 
     try {
@@ -38,7 +51,7 @@ export default function SignInPage() {
       if (!verifyData.verified) {
         toast({
           title: 'Access Denied',
-          description: verifyData.message || 'You must be registered in the GPAI Competition to access this platform.',
+          description: verifyData.message || AUTH_MESSAGES.ACCESS_DENIED,
           variant: 'destructive',
         })
         setLoading(false)
@@ -71,7 +84,7 @@ export default function SignInPage() {
           title: 'Success',
           description: 'Signed in successfully!',
         })
-        router.push('/dashboard')
+        router.push(ROUTES.DASHBOARD)
       }
     } catch {
       toast({
@@ -82,146 +95,20 @@ export default function SignInPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleMagicLink = async () => {
-    if (!email) {
-      toast({
-        title: 'Error',
-        description: 'Please enter your email address',
-        variant: 'destructive',
-      })
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      // First, verify user exists in GPAI database
-      const verifyResponse = await fetch('/api/auth/verify-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      })
-
-      const verifyData = await verifyResponse.json()
-
-      if (!verifyData.verified) {
-        toast({
-          title: 'Access Denied',
-          description: 'Only registered GPAI Competition participants can access this platform.',
-          variant: 'destructive',
-        })
-        setLoading(false)
-        return
-      }
-
-      // Send magic link
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
-      })
-
-      if (error) {
-        // If error, try to create account first
-        if (error.message.includes('User not found')) {
-          const { error: signUpError } = await supabase.auth.signUp({
-            email,
-            password: Math.random().toString(36).slice(-12), // Random password since we'll use magic link
-            options: {
-              emailRedirectTo: `${window.location.origin}/dashboard`,
-            },
-          })
-          
-          if (!signUpError) {
-            setMagicLinkSent(true)
-            toast({
-              title: 'Account Created!',
-              description: 'Check your email for the login link.',
-            })
-          } else {
-            toast({
-              title: 'Error',
-              description: signUpError.message,
-              variant: 'destructive',
-            })
-          }
-        } else {
-          toast({
-            title: 'Error',
-            description: error.message,
-            variant: 'destructive',
-          })
-        }
-      } else {
-        setMagicLinkSent(true)
-        toast({
-          title: 'Magic Link Sent!',
-          description: 'Check your email for the login link.',
-        })
-      }
-    } catch {
-      toast({
-        title: 'Error',
-        description: 'An unexpected error occurred',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (magicLinkSent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
-            <CardDescription>
-              We&apos;ve sent a login link to {email}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Click the link in your email to sign in. 
-            </p>
-            <p className="text-sm font-medium text-red-600">
-              If you don&apos;t see your verification email, please check your spam folder.
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={() => setMagicLinkSent(false)}
-            >
-              Back to sign in
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    )
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">GPAI Case Competition</h1>
-          <p className="text-lg text-gray-600 mt-1">by TeamTuring</p>
+          <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
+          <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
         </div>
         <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-          <CardDescription>
-            Use the same school email address registered on www.gpai.app
-          </CardDescription>
           <p className="text-sm font-medium text-red-600 mt-2">
-            Please use your school email used to sign up to gpai.app. Other addresses will not be able to enter competition.
+            {AUTH_MESSAGES.SCHOOL_EMAIL_WARNING}
           </p>
         </CardHeader>
         <form onSubmit={handleSignIn}>
@@ -233,7 +120,23 @@ export default function SignInPage() {
                 type="email"
                 placeholder="your.name@school.edu"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  // Real-time validation feedback for common issues
+                  if (e.target.value && e.target.value.includes('@')) {
+                    const validation = validateEmail(e.target.value)
+                    if (!validation.isValid) {
+                      // Show inline feedback for blocked domains
+                      if (e.target.value.includes('gmail.com')) {
+                        toast({
+                          title: 'School Email Required',
+                          description: 'Please use your school email address instead of Gmail.',
+                          variant: 'destructive',
+                        })
+                      }
+                    }
+                  }
+                }}
                 required
                 disabled={loading}
               />

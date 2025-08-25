@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
       user: user,
       message: 'User verified successfully'
     })
-  } catch (error) {
-    console.error('Error in verify-user route:', error)
+  } catch {
+    // Error in verify-user route
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
+import { APP_NAME, APP_AUTHOR, AUTH_MESSAGES, ROUTES } from '@/lib/constants'
+import { validateEmail } from '@/lib/email-validation'
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
@@ -22,6 +24,17 @@ export default function SignUpPage() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Validate email first
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.isValid) {
+      toast({
+        title: 'Invalid Email',
+        description: emailValidation.error,
+        variant: 'destructive',
+      })
+      return
+    }
+    
     if (password !== confirmPassword) {
       toast({
         title: 'Error',
@@ -31,10 +44,10 @@ export default function SignUpPage() {
       return
     }
 
-    if (password.length < 6) {
+    if (password.length < AUTH_MESSAGES.PASSWORD_MIN_LENGTH) {
       toast({
         title: 'Error',
-        description: 'Password must be at least 6 characters',
+        description: `Password must be at least ${AUTH_MESSAGES.PASSWORD_MIN_LENGTH} characters`,
         variant: 'destructive',
       })
       return
@@ -94,7 +107,7 @@ export default function SignUpPage() {
           setTimeout(() => {
             toast({
               title: '⚠️ Important',
-              description: "If you don't see your verification email, please check your spam folder.",
+              description: AUTH_MESSAGES.SPAM_FOLDER_WARNING,
               variant: 'destructive',
             })
           }, 1000)
@@ -104,14 +117,14 @@ export default function SignUpPage() {
             title: 'Success',
             description: 'Account created successfully!',
           })
-          router.push('/dashboard')
+          router.push(ROUTES.DASHBOARD)
         } else {
           toast({
             title: 'Success',
             description: 'Account created! Please sign in.',
           })
         }
-        router.push('/sign-in')
+        router.push(ROUTES.SIGN_IN)
       }
     } catch {
       toast({
@@ -128,8 +141,8 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">GPAI Case Competition</h1>
-          <p className="text-lg text-gray-600 mt-1">by TeamTuring</p>
+          <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
+          <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
         </div>
         <Card>
         <CardHeader className="space-y-1">
@@ -138,7 +151,7 @@ export default function SignUpPage() {
             Only registered GPAI Competition participants can create accounts. Use your registered email address.
           </CardDescription>
           <p className="text-sm font-medium text-red-600 mt-2">
-            Please use your school email used to sign up to gpai.app. Other addresses will not be able to enter competition.
+            {AUTH_MESSAGES.SCHOOL_EMAIL_WARNING}
           </p>
         </CardHeader>
         <form onSubmit={handleSignUp}>
@@ -150,7 +163,21 @@ export default function SignUpPage() {
                 type="email"
                 placeholder="your.name@school.edu"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  // Real-time validation feedback
+                  if (e.target.value) {
+                    const validation = validateEmail(e.target.value)
+                    if (!validation.isValid && e.target.value.includes('@')) {
+                      // Only show error if they've typed an @ (indicating they're done typing domain)
+                      toast({
+                        title: 'Email Notice',
+                        description: validation.error,
+                        variant: 'destructive',
+                      })
+                    }
+                  }
+                }}
                 required
                 disabled={loading}
               />

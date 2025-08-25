@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
+import { APP_NAME, APP_AUTHOR, AUTH_MESSAGES } from '@/lib/constants'
+import { validateEmail } from '@/lib/email-validation'
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('')
@@ -18,6 +20,18 @@ export default function ResetPasswordPage() {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate email first
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.isValid) {
+      toast({
+        title: 'Invalid Email',
+        description: emailValidation.error,
+        variant: 'destructive',
+      })
+      return
+    }
+    
     setLoading(true)
 
     try {
@@ -54,8 +68,8 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">GPAI Case Competition</h1>
-            <p className="text-lg text-gray-600 mt-1">by TeamTuring</p>
+            <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
+            <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
           </div>
           <Card>
           <CardHeader className="space-y-1">
@@ -69,7 +83,7 @@ export default function ResetPasswordPage() {
               Please check your email and click on the reset link to create a new password.
             </p>
             <p className="text-sm font-medium text-red-600">
-              If you don&apos;t see your verification email, please check your spam folder.
+              {AUTH_MESSAGES.SPAM_FOLDER_WARNING}
             </p>
           </CardContent>
           <CardFooter>
@@ -89,8 +103,8 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">GPAI Case Competition</h1>
-          <p className="text-lg text-gray-600 mt-1">by TeamTuring</p>
+          <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
+          <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
         </div>
         <Card>
         <CardHeader className="space-y-1">

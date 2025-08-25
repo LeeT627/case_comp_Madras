@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
+import { FILE_UPLOAD, ROUTES } from '@/lib/constants'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
@@ -26,13 +27,13 @@ export default function DashboardPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push('/sign-in')
+        router.push(ROUTES.SIGN_IN)
       } else {
         setUser(user)
       }
-    } catch (error) {
-      console.error('Error checking user:', error)
-      router.push('/sign-in')
+    } catch {
+      // Error checking user
+      router.push(ROUTES.SIGN_IN)
     }
   }
 
@@ -41,9 +42,8 @@ export default function DashboardPage() {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) {
       const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase()
-      const validExtensions = ['pdf', 'ppt', 'pptx']
       
-      if (!validExtensions.includes(fileExtension || '')) {
+      if (!FILE_UPLOAD.ALLOWED_EXTENSIONS.includes(fileExtension || '')) {
         toast({
           title: 'Invalid file type',
           description: 'Please upload a PDF or PowerPoint file',
@@ -52,7 +52,7 @@ export default function DashboardPage() {
         return
       }
 
-      if (selectedFile.size > 20 * 1024 * 1024) {
+      if (selectedFile.size > FILE_UPLOAD.MAX_SIZE) {
         toast({
           title: 'File too large',
           description: 'File size must be less than 20MB',

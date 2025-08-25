@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
+import { APP_NAME, APP_AUTHOR, AUTH_MESSAGES, ROUTES } from '@/lib/constants'
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('')
@@ -21,7 +22,7 @@ export default function UpdatePasswordPage() {
     // Check if we have a session (user came from email link)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        router.push('/sign-in')
+        router.push(ROUTES.SIGN_IN)
       }
     })
   }, [router, supabase.auth])
@@ -38,10 +39,10 @@ export default function UpdatePasswordPage() {
       return
     }
 
-    if (password.length < 6) {
+    if (password.length < AUTH_MESSAGES.PASSWORD_MIN_LENGTH) {
       toast({
         title: 'Error',
-        description: 'Password must be at least 6 characters',
+        description: `Password must be at least ${AUTH_MESSAGES.PASSWORD_MIN_LENGTH} characters`,
         variant: 'destructive',
       })
       return
@@ -68,7 +69,7 @@ export default function UpdatePasswordPage() {
         
         // Sign out and redirect to sign in
         await supabase.auth.signOut()
-        router.push('/sign-in')
+        router.push(ROUTES.SIGN_IN)
       }
     } catch {
       toast({
@@ -83,7 +84,12 @@ export default function UpdatePasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
+          <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
+        </div>
+        <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Update password</CardTitle>
           <CardDescription>
@@ -124,6 +130,7 @@ export default function UpdatePasswordPage() {
           </CardFooter>
         </form>
       </Card>
+      </div>
     </div>
   )
 }

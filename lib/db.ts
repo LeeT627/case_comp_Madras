@@ -24,8 +24,8 @@ export async function verifyGPAIUser(email: string): Promise<boolean> {
     `
     const result = await pool.query(query, [email])
     return result.rows[0]?.exists || false
-  } catch (error) {
-    console.error('Error verifying GPAI user:', error)
+  } catch {
+    // Error verifying GPAI user
     // You might want to check the actual table structure
     // Let's try a more generic query
     try {
@@ -36,8 +36,8 @@ export async function verifyGPAIUser(email: string): Promise<boolean> {
       `
       const altResult = await pool.query(altQuery, [email])
       return (altResult.rows[0]?.count || 0) > 0
-    } catch (altError) {
-      console.error('Alternative query also failed:', altError)
+    } catch {
+      // Alternative query also failed
       return false
     }
   }
@@ -54,8 +54,8 @@ export async function getGPAIUser(email: string) {
     `
     const result = await pool.query(query, [email])
     return result.rows[0] || null
-  } catch (error) {
-    console.error('Error getting GPAI user:', error)
+  } catch {
+    // Error getting GPAI user
     return null
   }
 }
