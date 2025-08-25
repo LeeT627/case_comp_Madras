@@ -24,6 +24,27 @@ export const ROUTES = {
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
   DASHBOARD: '/dashboard',
-  RESET_PASSWORD: '/reset-password',
-  UPDATE_PASSWORD: '/update-password'
+  DASHBOARD_LOCATION: '/dashboard/location',
+  DASHBOARD_INFORMATION: '/dashboard/information',
+  DASHBOARD_UPLOAD: '/dashboard/upload',
+  RESET_PASSWORD: '/reset-password'
 }
+
+export const LOCATIONS = [
+  { value: 'delhi', label: 'Delhi', available: true },
+  // Add more locations here in the future
+  // { value: 'mumbai', label: 'Mumbai', available: false },
+  // { value: 'bangalore', label: 'Bangalore', available: false },
+]
+
+export const COLLEGES = [
+  'IIT Delhi - Indian Institute of Technology',
+  'Jamia Millia Islamia',
+  'DTU - Delhi Technological University',
+  'Amity University, Noida',
+  'NIT Delhi - National Institute of Technology',
+  'Netaji Subhas University of Technology',
+  'IIIT Delhi - Indraprastha Institute of Information Technology',
+  'Guru Gobind Singh Indraprastha University',
+  'Other'
+]

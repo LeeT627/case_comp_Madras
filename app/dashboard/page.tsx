@@ -5,133 +5,97 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import { FILE_UPLOAD, ROUTES } from '@/lib/constants'
+import { ROUTES } from '@/lib/constants'
+
+interface SubmissionStatus {
+  hasParticipantInfo: boolean
+  hasFileUploaded: boolean
+  participantName?: string
+  fileName?: string
+  location?: string
+  college?: string
+  submittedAt?: string
+}
 
 export default function DashboardPage() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const [currentFileName, setCurrentFileName] = useState<string | null>(null)
+  const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>({
+    hasParticipantInfo: false,
+    hasFileUploaded: false
+  })
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
   const supabase = createClient()
 
   useEffect(() => {
-    checkUser()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    checkUserAndStatus()
+  }, [])
 
-  const checkUser = async () => {
+  const checkUserAndStatus = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         router.push(ROUTES.SIGN_IN)
-      } else {
-        setUser(user)
+        return
       }
-    } catch {
-      // Error checking user
-      router.push(ROUTES.SIGN_IN)
-    }
-  }
-
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
-    if (selectedFile) {
-      const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase()
       
-      if (!FILE_UPLOAD.ALLOWED_EXTENSIONS.includes(fileExtension || '')) {
-        toast({
-          title: 'Invalid file type',
-          description: 'Please upload a PDF or PowerPoint file',
-          variant: 'destructive',
-        })
-        return
-      }
+      setUser(user)
 
-      if (selectedFile.size > FILE_UPLOAD.MAX_SIZE) {
-        toast({
-          title: 'File too large',
-          description: 'File size must be less than 20MB',
-          variant: 'destructive',
-        })
-        return
-      }
+      // Check participant info
+      const { data: participantInfo } = await supabase
+        .from('participant_info')
+        .select('first_name, last_name, location, college, college_other, created_at')
+        .eq('user_id', user.id)
+        .single()
 
-      setFile(selectedFile)
-    }
-  }
-
-  const handleUpload = async () => {
-    if (!file || !user) return
-
-    setUploading(true)
-    try {
-      // First, delete all existing files for this user
-      const { data: existingFiles } = await supabase.storage
+      // Check uploaded files
+      const { data: files } = await supabase.storage
         .from('uploads')
         .list(user.id, {
-          limit: 100,
+          limit: 1,
           offset: 0,
         })
 
-      if (existingFiles && existingFiles.length > 0) {
-        const filesToDelete = existingFiles.map(f => `${user.id}/${f.name}`)
-        await supabase.storage
-          .from('uploads')
-          .remove(filesToDelete)
+      const status: SubmissionStatus = {
+        hasParticipantInfo: !!participantInfo,
+        hasFileUploaded: files ? files.length > 0 : false,
+        participantName: participantInfo ? `${participantInfo.first_name} ${participantInfo.last_name}` : undefined,
+        location: participantInfo?.location,
+        college: participantInfo?.college === 'Other' ? participantInfo.college_other : participantInfo?.college,
+        fileName: files && files.length > 0 ? files[0].name.split('-').slice(1).join('-') : undefined,
+        submittedAt: participantInfo?.created_at
       }
 
-      // Now upload the new file
-      const fileName = `${Date.now()}-${file.name}`
-      const filePath = `${user.id}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('uploads')
-        .upload(filePath, file)
-
-      if (uploadError) {
-        throw uploadError
-      }
-
-      toast({
-        title: 'Success',
-        description: 'File uploaded successfully',
-      })
-
-      setCurrentFileName(file.name)
-      setFile(null)
-      
-      // Reset file input
-      const fileInput = document.getElementById('file') as HTMLInputElement
-      if (fileInput) fileInput.value = ''
-    } catch (error) {
-      toast({
-        title: 'Upload failed',
-        description: error instanceof Error ? error.message : 'Failed to upload file',
-        variant: 'destructive',
-      })
+      setSubmissionStatus(status)
+    } catch {
+      // Error checking status
     } finally {
-      setUploading(false)
+      setLoading(false)
     }
   }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push('/sign-in')
+    router.push(ROUTES.SIGN_IN)
   }
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  const handleStartSubmission = () => {
+    if (!submissionStatus.hasParticipantInfo) {
+      router.push(ROUTES.DASHBOARD_LOCATION)
+    } else {
+      router.push(ROUTES.DASHBOARD_UPLOAD)
+    }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -143,71 +107,137 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Welcome Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Upload Submission</CardTitle>
+              <CardTitle className="text-2xl">Welcome to GPAI Case Competition</CardTitle>
               <CardDescription>
-                Upload your case competition submission (PDF or PowerPoint, max 20MB)
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="file">Select File</Label>
-                <Input
-                  id="file"
-                  type="file"
-                  accept=".pdf,.ppt,.pptx"
-                  onChange={handleFileChange}
-                  disabled={uploading}
-                />
-              </div>
-              {file && (
-                <div className="text-sm text-muted-foreground">
-                  Selected: {file.name} ({formatFileSize(file.size)})
-                </div>
-              )}
-              {currentFileName && !file && (
-                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm font-medium text-green-800">Current Submission:</p>
-                  <p className="text-sm text-green-700">{currentFileName}</p>
-                </div>
-              )}
-              <Button 
-                onClick={handleUpload} 
-                disabled={!file || uploading}
-                className="w-full"
-              >
-                {uploading ? 'Uploading...' : currentFileName ? 'Replace Submission' : 'Upload Submission'}
-              </Button>
-              {currentFileName && (
-                <p className="text-xs text-muted-foreground text-center">
-                  ⚠️ Uploading a new file will replace your current submission
-                </p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Competition Deadline</CardTitle>
-              <CardDescription>
-                Important dates and deadlines
+                {user?.email}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Final Submission Deadline</p>
-                    <p className="text-sm text-muted-foreground">Last date to submit</p>
+              <p className="text-gray-600 mb-4">
+                Submit your case study presentation for the GPAI Competition. Follow the steps below to complete your submission.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Submission Status */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Submission Status</CardTitle>
+              <CardDescription>
+                Track your submission progress
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Status Indicators */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                      submissionStatus.hasParticipantInfo ? 'bg-green-500' : 'bg-gray-300'
+                    }`}>
+                      {submissionStatus.hasParticipantInfo && (
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium">Participant Information</p>
+                      {submissionStatus.hasParticipantInfo && (
+                        <p className="text-sm text-gray-500">
+                          {submissionStatus.participantName} • {submissionStatus.college}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold">TBD</p>
-                    <p className="text-sm text-muted-foreground">To be announced</p>
+                  {submissionStatus.hasParticipantInfo && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => router.push(ROUTES.DASHBOARD_INFORMATION)}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                      submissionStatus.hasFileUploaded ? 'bg-green-500' : 'bg-gray-300'
+                    }`}>
+                      {submissionStatus.hasFileUploaded && (
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium">File Upload</p>
+                      {submissionStatus.hasFileUploaded && submissionStatus.fileName && (
+                        <p className="text-sm text-gray-500">{submissionStatus.fileName}</p>
+                      )}
+                    </div>
                   </div>
+                  {submissionStatus.hasFileUploaded && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => router.push(ROUTES.DASHBOARD_UPLOAD)}
+                    >
+                      Replace
+                    </Button>
+                  )}
                 </div>
               </div>
+
+              {/* Action Button */}
+              <div className="pt-4">
+                {!submissionStatus.hasParticipantInfo ? (
+                  <Button 
+                    onClick={() => router.push(ROUTES.DASHBOARD_LOCATION)}
+                    className="w-full"
+                    size="lg"
+                  >
+                    Start Submission
+                  </Button>
+                ) : !submissionStatus.hasFileUploaded ? (
+                  <Button 
+                    onClick={() => router.push(ROUTES.DASHBOARD_UPLOAD)}
+                    className="w-full"
+                    size="lg"
+                  >
+                    Upload Your File
+                  </Button>
+                ) : (
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center p-2 bg-green-100 rounded-full mb-3">
+                      <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-lg font-semibold text-green-700">Submission Complete!</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Your case study has been successfully submitted.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Deadline Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Competition Deadline</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-red-600">January 31, 2025</p>
+              <p className="text-sm text-gray-600 mt-1">Make sure to submit before the deadline</p>
             </CardContent>
           </Card>
         </div>
