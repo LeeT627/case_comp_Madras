@@ -147,9 +147,6 @@ export default function SignUpPage() {
         <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>
-            Only registered GPAI Competition participants can create accounts. Use your registered email address.
-          </CardDescription>
           <p className="text-sm font-medium text-red-600 mt-2">
             {AUTH_MESSAGES.SCHOOL_EMAIL_WARNING}
           </p>
