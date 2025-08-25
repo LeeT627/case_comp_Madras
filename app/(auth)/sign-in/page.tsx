@@ -259,23 +259,6 @@ export default function SignInPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign in'}
             </Button>
-            <div className="relative w-full">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or</span>
-              </div>
-            </div>
-            <Button 
-              type="button"
-              variant="outline" 
-              className="w-full" 
-              disabled={loading || !email}
-              onClick={handleMagicLink}
-            >
-              {loading ? 'Sending...' : 'Send Magic Link (No Password Required)'}
-            </Button>
             <div className="text-sm text-center text-muted-foreground">
               Don&apos;t have an account?{' '}
               <Link href="/sign-up" className="text-primary hover:underline">
