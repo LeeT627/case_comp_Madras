@@ -36,7 +36,7 @@ export default function ResetPasswordPage() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/update-password`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/update-password`,
       })
 
       if (error) {
@@ -48,8 +48,8 @@ export default function ResetPasswordPage() {
       } else {
         setEmailSent(true)
         toast({
-          title: 'Success',
-          description: 'Password reset link has been sent to your email',
+          title: 'Success - Check Your Email',
+          description: `Password reset link has been sent to your email.\n\n⚠️ ${AUTH_MESSAGES.SPAM_FOLDER_WARNING}`,
         })
       }
     } catch {
@@ -108,19 +108,22 @@ export default function ResetPasswordPage() {
         </div>
         <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Reset password</CardTitle>
+          <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
           <CardDescription>
             Enter your email address and we&apos;ll send you a reset link
           </CardDescription>
+          <p className="text-sm font-medium text-red-600 mt-2">
+            {AUTH_MESSAGES.SCHOOL_EMAIL_WARNING}
+          </p>
         </CardHeader>
         <form onSubmit={handleResetPassword}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">School Email Address</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder="your.name@school.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -137,6 +140,9 @@ export default function ResetPasswordPage() {
               <Link href="/sign-in" className="text-primary hover:underline">
                 Sign in
               </Link>
+            </div>
+            <div className="text-sm text-center text-muted-foreground">
+              For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
             </div>
           </CardFooter>
         </form>
