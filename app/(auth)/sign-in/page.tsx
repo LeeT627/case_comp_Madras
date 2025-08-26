@@ -108,7 +108,7 @@ export default function SignInPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
           <p className="text-sm font-medium text-gray-700 mt-2">
-            **Must create a separate account for competition
+            **You must create a separate account for this competition
           </p>
         </CardHeader>
         <form onSubmit={handleSignIn}>
