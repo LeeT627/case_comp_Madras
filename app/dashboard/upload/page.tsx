@@ -302,7 +302,7 @@ export default function UploadPage() {
             <CardDescription>
               Upload your case study presentation (PDF or PowerPoint, max 20MB)
               <br />
-              <span className="text-sm font-medium">You can re-upload before deadline</span>
+              <span className="text-sm font-medium">You can re-upload before deadline (re-uploading will automatically overwrite previous submission)</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
