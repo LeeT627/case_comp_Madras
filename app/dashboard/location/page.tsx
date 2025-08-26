@@ -97,8 +97,8 @@ export default function LocationPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-3">
-              <Label htmlFor="location">Competition Location *</Label>
-              <div className="grid gap-3">
+              <Label htmlFor="location">Competition Location (or choose the closest one) *</Label>
+              <div className="grid gap-3 max-h-96 overflow-y-auto">
                 {LOCATIONS.map((location) => (
                   <div
                     key={location.value}

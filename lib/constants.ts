@@ -31,10 +31,28 @@ export const ROUTES = {
 }
 
 export const LOCATIONS = [
+  { value: 'bhubaneswar', label: 'Bhubaneswar', available: true },
+  { value: 'chennai', label: 'Chennai', available: true },
   { value: 'delhi', label: 'Delhi', available: true },
-  // Add more locations here in the future
-  // { value: 'mumbai', label: 'Mumbai', available: false },
-  // { value: 'bangalore', label: 'Bangalore', available: false },
+  { value: 'dhanbad', label: 'Dhanbad', available: true },
+  { value: 'dharwad', label: 'Dharwad', available: true },
+  { value: 'gandhinagar', label: 'Gandhinagar', available: true },
+  { value: 'goa', label: 'Goa', available: true },
+  { value: 'guwahati', label: 'Guwahati', available: true },
+  { value: 'hyderabad', label: 'Hyderabad', available: true },
+  { value: 'indore', label: 'Indore', available: true },
+  { value: 'jammu', label: 'Jammu', available: true },
+  { value: 'jodhpur', label: 'Jodhpur', available: true },
+  { value: 'kanpur', label: 'Kanpur', available: true },
+  { value: 'kharagpur', label: 'Kharagpur', available: true },
+  { value: 'mandi', label: 'Mandi', available: true },
+  { value: 'mumbai', label: 'Mumbai', available: true },
+  { value: 'palakkad', label: 'Palakkad', available: true },
+  { value: 'patna', label: 'Patna', available: true },
+  { value: 'roorkee', label: 'Roorkee', available: true },
+  { value: 'ropar', label: 'Ropar', available: true },
+  { value: 'tirupati', label: 'Tirupati', available: true },
+  { value: 'varanasi', label: 'Varanasi', available: true },
 ]
 
 export const COLLEGES = [
