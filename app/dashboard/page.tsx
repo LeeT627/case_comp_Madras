@@ -120,7 +120,7 @@ export default function DashboardPage() {
                 Submit your case study presentation for the GPAI Competition. Follow the steps below to complete your submission.
               </p>
               <p className="text-sm text-gray-600 mb-4">
-                Visit <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a>
+                Take me back to: <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a>
               </p>
               <div className="border-t pt-4">
                 <p className="text-sm font-semibold text-gray-700">Competition Deadline</p>
