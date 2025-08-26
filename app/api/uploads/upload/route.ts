@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (error) return NextResponse.json({ error: 'Failed to upload' }, { status: 500 })
 
     return NextResponse.json({ ok: true, fileName: file.name })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

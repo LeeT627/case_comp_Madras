@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function HowToApplyPage() {
   const router = useRouter()
@@ -31,10 +31,10 @@ export default function HowToApplyPage() {
                   <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
                     www.gpai.app
                   </a>{' '}
-                  and sign-up using your own school email. <strong>You must select "Continue with Email"</strong> (not Google or Apple sign-in). Any other email addresses such as @gmail.com will not be able to enter the competition.
+                  and sign-up using your own school email. <strong>You must select &quot;Continue with Email&quot;</strong> (not Google or Apple sign-in). Any other email addresses such as @gmail.com will not be able to enter the competition.
                   
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                    <p className="text-sm font-semibold text-red-600 mb-3">Important: Use "Continue with Email" option only!</p>
+                    <p className="text-sm font-semibold text-red-600 mb-3">Important: Use &quot;Continue with Email&quot; option only!</p>
                     <div className="bg-white p-4 rounded-md shadow-sm border border-gray-300">
                       <p className="text-center text-lg font-bold mb-2">Get Started for Free!</p>
                       <p className="text-center text-sm text-gray-600 mb-4">Sign up to unlock full features and save your history.</p>

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useToast } from '@/hooks/use-toast'
 import { ROUTES } from '@/lib/constants'
 import { fetchSessionUser, logout as gpaiLogout } from '@/lib/gpaiAuth'
 
@@ -26,60 +25,51 @@ export default function DashboardPage() {
   })
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const { toast } = useToast()
 
   useEffect(() => {
-    checkUserAndStatus()
-  }, [])
+    const checkUserAndStatus = async () => {
+      try {
+        // gpai 세션 확인 및 유저 정보 확보
+        const gpaiUser = await fetchSessionUser()
+        setUser({ id: gpaiUser.id, email: gpaiUser.email })
 
-  const checkUserAndStatus = async () => {
-    try {
-      // gpai 세션 확인 및 유저 정보 확보
-      const gpaiUser = await fetchSessionUser()
-      setUser({ id: gpaiUser.id, email: gpaiUser.email })
+        // 참가자 정보
+        const infoRes = await fetch('/api/participant-info', { method: 'GET' })
+        if (infoRes.status === 401) {
+          router.push(ROUTES.SIGN_IN)
+          return
+        }
+        const infoJson = await infoRes.json()
 
-      // 참가자 정보
-      const infoRes = await fetch('/api/participant-info', { method: 'GET' })
-      if (infoRes.status === 401) {
-        router.push(ROUTES.SIGN_IN)
-        return
+        // 업로드 파일 목록
+        const listRes = await fetch('/api/uploads/list', { method: 'GET' })
+        const listJson = await listRes.json()
+        const firstFile: string | undefined = (listJson.files && listJson.files[0]) || undefined
+
+        const status: SubmissionStatus = {
+          hasParticipantInfo: !!infoJson.data,
+          hasFileUploaded: !!firstFile,
+          participantName: infoJson.data ? `${infoJson.data.first_name} ${infoJson.data.last_name}` : undefined,
+          location: infoJson.data?.location,
+          college: infoJson.data?.college === 'Other' ? infoJson.data?.college_other : infoJson.data?.college,
+          fileName: firstFile ? firstFile.split('-').slice(1).join('-') : undefined,
+          submittedAt: infoJson.data?.created_at,
+        }
+
+        setSubmissionStatus(status)
+      } catch {
+        // Error checking status
+      } finally {
+        setLoading(false)
       }
-      const infoJson = await infoRes.json()
-
-      // 업로드 파일 목록
-      const listRes = await fetch('/api/uploads/list', { method: 'GET' })
-      const listJson = await listRes.json()
-      const firstFile: string | undefined = (listJson.files && listJson.files[0]) || undefined
-
-      const status: SubmissionStatus = {
-        hasParticipantInfo: !!infoJson.data,
-        hasFileUploaded: !!firstFile,
-        participantName: infoJson.data ? `${infoJson.data.first_name} ${infoJson.data.last_name}` : undefined,
-        location: infoJson.data?.location,
-        college: infoJson.data?.college === 'Other' ? infoJson.data?.college_other : infoJson.data?.college,
-        fileName: firstFile ? firstFile.split('-').slice(1).join('-') : undefined,
-        submittedAt: infoJson.data?.created_at,
-      }
-
-      setSubmissionStatus(status)
-    } catch {
-      // Error checking status
-    } finally {
-      setLoading(false)
     }
-  }
+    
+    checkUserAndStatus()
+  }, [router])
 
   const handleSignOut = async () => {
     try { await gpaiLogout() } catch {}
     router.push(ROUTES.SIGN_IN)
-  }
-
-  const handleStartSubmission = () => {
-    if (!submissionStatus.hasParticipantInfo) {
-      router.push(ROUTES.DASHBOARD_LOCATION)
-    } else {
-      router.push(ROUTES.DASHBOARD_UPLOAD)
-    }
   }
 
   if (loading) {
