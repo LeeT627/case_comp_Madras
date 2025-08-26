@@ -31,7 +31,7 @@ export default function HowToApplyPage() {
                   <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
                     www.gpai.app
                   </a>{' '}
-                  and sign-up using your own school email (any other email addresses such as @gmail.com will not be able to enter the competition).
+                  and sign-up using your own school email. <strong>You must select "Continue with Email"</strong> (not Google or Apple sign-in). Any other email addresses such as @gmail.com will not be able to enter the competition.
                 </li>
                 <li className="text-gray-700">
                   Enter Contest tab on the left panel. You will be redirected to the competition page.
