@@ -245,6 +245,9 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Winnings & Deadline</CardTitle>
+              <CardDescription>
+                Winners will be announced after deadline
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
