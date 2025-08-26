@@ -100,8 +100,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+        <div className="flex justify-end mb-8">
           <Button onClick={handleSignOut} variant="outline">
             Sign Out
           </Button>
