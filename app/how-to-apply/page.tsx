@@ -35,26 +35,11 @@ export default function HowToApplyPage() {
                   
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <p className="text-sm font-semibold text-red-600 mb-3">Important: Use &quot;Continue with Email&quot; option only!</p>
-                    <div className="bg-white p-4 rounded-md shadow-sm border border-gray-300">
-                      <p className="text-center text-lg font-bold mb-2">Get Started for Free!</p>
-                      <p className="text-center text-sm text-gray-600 mb-4">Sign up to unlock full features and save your history.</p>
-                      
-                      <div className="space-y-2">
-                        <div className="flex items-center p-2 bg-gray-100 rounded opacity-50">
-                          <span className="text-gray-500">🔍 Continue with Google</span>
-                        </div>
-                        <div className="flex items-center p-2 bg-gray-100 rounded opacity-50">
-                          <span className="text-gray-500">🔍 Continue with Apple</span>
-                        </div>
-                        <p className="text-center text-xs text-gray-400 py-1">OR</p>
-                        <div className="p-3 bg-red-500 text-white rounded text-center font-semibold relative">
-                          Continue with Email
-                          <span className="absolute -right-20 top-1/2 -translate-y-1/2 text-red-600 font-bold text-sm">
-                            ← Must use this link
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <img 
+                      src="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/gpai-signup-guide.png"
+                      alt="GPAI Signup Guide - Must use Continue with Email option"
+                      className="w-full max-w-md mx-auto rounded-lg shadow-md"
+                    />
                   </div>
                 </li>
                 <li className="text-gray-700">
