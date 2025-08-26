@@ -92,7 +92,7 @@ export default function LocationPage() {
           <CardHeader>
             <CardTitle className="text-2xl">Select Your Location</CardTitle>
             <CardDescription>
-              Choose your competition location. More locations will be available soon.
+              Choose your competition location.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
