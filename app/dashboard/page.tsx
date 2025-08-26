@@ -124,7 +124,7 @@ export default function DashboardPage() {
                 <p className="text-sm font-semibold text-gray-700">Competition Deadline</p>
                 <p className="text-xl font-bold text-red-600">12th September, 2025 (IST)</p>
                 <p className="text-sm text-gray-600 mt-2">
-                  Visit <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a> for more information
+                  Visit <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a>
                 </p>
               </div>
             </CardContent>
