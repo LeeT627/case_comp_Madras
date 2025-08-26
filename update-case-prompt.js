@@ -2,7 +2,7 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 
 const supabaseUrl = 'https://aggfpcxaxdyxiriqruos.supabase.co';
-const supabaseKey = 'YOUR_SERVICE_ROLE_KEY_HERE'; // Replace with your service role key
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnZ2ZwY3hheGR5eGlyaXFydW9zIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NjEzOTM1NiwiZXhwIjoyMDcxNzE1MzU2fQ.hYGL6_pOASJXiI7ic6KZ1fJDGI-2PdE0SvR51Bl2uwM'; // Service role key
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -15,8 +15,8 @@ async function updateCasePrompt(pdfPath) {
     
     // Upload/update the PDF (upsert will replace if exists)
     const { data, error } = await supabase.storage
-      .from('uploads')
-      .upload('public/case-competition-prompt.pdf', fileData, {
+      .from('public-files')
+      .upload('case-competition-prompt.pdf', fileData, {
         contentType: 'application/pdf',
         cacheControl: '3600',
         upsert: true // This will overwrite the existing file
@@ -31,8 +31,8 @@ async function updateCasePrompt(pdfPath) {
     
     // Get public URL
     const { data: { publicUrl } } = supabase.storage
-      .from('uploads')
-      .getPublicUrl('public/case-competition-prompt.pdf');
+      .from('public-files')
+      .getPublicUrl('case-competition-prompt.pdf');
     
     console.log('Public URL:', publicUrl);
     console.log('This URL is already linked in your dashboard.');
