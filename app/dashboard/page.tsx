@@ -107,10 +107,10 @@ export default function DashboardPage() {
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Case Competition Prompt */}
+          {/* Welcome Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Case Competition Prompt</CardTitle>
+              <CardTitle>Welcome to GPAI Case Competition</CardTitle>
               <CardDescription>
                 Download the case study prompt for the competition
               </CardDescription>
@@ -241,10 +241,10 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Welcome Card */}
+          {/* Winnings & Deadline Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Welcome to GPAI Case Competition</CardTitle>
+              <CardTitle className="text-2xl">Winnings & Deadline</CardTitle>
               <CardDescription>
                 {user?.email}
               </CardDescription>
