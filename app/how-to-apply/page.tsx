@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -35,11 +36,16 @@ export default function HowToApplyPage() {
                   
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <p className="text-sm font-semibold text-red-600 mb-3">Important: Use &quot;Continue with Email&quot; option only!</p>
-                    <img 
-                      src="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/gpai-signup-guide.png"
-                      alt="GPAI Signup Guide - Must use Continue with Email option"
-                      className="w-full max-w-md mx-auto rounded-lg shadow-md"
-                    />
+                    <div className="relative w-full max-w-md mx-auto">
+                      <Image 
+                        src="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/gpai-signup-guide.png"
+                        alt="GPAI Signup Guide - Must use Continue with Email option"
+                        width={400}
+                        height={500}
+                        className="rounded-lg shadow-md"
+                        unoptimized
+                      />
+                    </div>
                   </div>
                 </li>
                 <li className="text-gray-700">
