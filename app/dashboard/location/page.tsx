@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { LOCATIONS, ROUTES } from '@/lib/constants'
+import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 export default function LocationPage() {
   const [selectedLocation, setSelectedLocation] = useState('')
@@ -15,7 +15,6 @@ export default function LocationPage() {
   const [checking, setChecking] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
-  const supabase = createClient()
 
   useEffect(() => {
     checkExistingInfo()
@@ -23,21 +22,22 @@ export default function LocationPage() {
 
   const checkExistingInfo = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      // Gate via gpai session first
+      try {
+        await fetchSessionUser()
+      } catch {
         router.push(ROUTES.SIGN_IN)
         return
       }
 
-      // Check if user already has participant info
-      const { data } = await supabase
-        .from('participant_info')
-        .select('location')
-        .eq('user_id', user.id)
-        .single()
+      // gpai 세션 확인 및 기존 참가자 정보 확인
+      await fetchSessionUser()
 
-      if (data?.location) {
-        // User already selected location, skip to information page
+      const res = await fetch('/api/participant-info', { method: 'GET' })
+      const json = await res.json()
+
+      if (json?.data?.location) {
+        // 이미 위치가 저장된 경우 정보 입력 페이지로 이동
         router.push(ROUTES.DASHBOARD_INFORMATION)
       }
     } catch {

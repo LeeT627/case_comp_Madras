@@ -1,15 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr'
-
-export function createClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Supabase environment variables are not set')
-  }
-  
-  return createBrowserClient(
-    supabaseUrl,
-    supabaseAnonKey
-  )
+// Deprecated: Supabase browser client removed. Use server API routes instead.
+export function createClient(): never {
+  throw new Error('Supabase client has been removed. Use server API routes instead.')
 }

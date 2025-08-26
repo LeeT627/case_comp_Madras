@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { ROUTES } from '@/lib/constants'
+import { fetchSessionUser, logout as gpaiLogout } from '@/lib/gpaiAuth'
 
 interface SubmissionStatus {
   hasParticipantInfo: boolean
@@ -27,7 +27,6 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
-  const supabase = createClient()
 
   useEffect(() => {
     checkUserAndStatus()
@@ -35,37 +34,31 @@ export default function DashboardPage() {
 
   const checkUserAndStatus = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      // gpai 세션 확인 및 유저 정보 확보
+      const gpaiUser = await fetchSessionUser()
+      setUser({ id: gpaiUser.id, email: gpaiUser.email })
+
+      // 참가자 정보
+      const infoRes = await fetch('/api/participant-info', { method: 'GET' })
+      if (infoRes.status === 401) {
         router.push(ROUTES.SIGN_IN)
         return
       }
-      
-      setUser(user)
+      const infoJson = await infoRes.json()
 
-      // Check participant info
-      const { data: participantInfo } = await supabase
-        .from('participant_info')
-        .select('first_name, last_name, location, college, college_other, created_at')
-        .eq('user_id', user.id)
-        .single()
-
-      // Check uploaded files
-      const { data: files } = await supabase.storage
-        .from('uploads')
-        .list(user.id, {
-          limit: 1,
-          offset: 0,
-        })
+      // 업로드 파일 목록
+      const listRes = await fetch('/api/uploads/list', { method: 'GET' })
+      const listJson = await listRes.json()
+      const firstFile: string | undefined = (listJson.files && listJson.files[0]) || undefined
 
       const status: SubmissionStatus = {
-        hasParticipantInfo: !!participantInfo,
-        hasFileUploaded: files ? files.length > 0 : false,
-        participantName: participantInfo ? `${participantInfo.first_name} ${participantInfo.last_name}` : undefined,
-        location: participantInfo?.location,
-        college: participantInfo?.college === 'Other' ? participantInfo.college_other : participantInfo?.college,
-        fileName: files && files.length > 0 ? files[0].name.split('-').slice(1).join('-') : undefined,
-        submittedAt: participantInfo?.created_at
+        hasParticipantInfo: !!infoJson.data,
+        hasFileUploaded: !!firstFile,
+        participantName: infoJson.data ? `${infoJson.data.first_name} ${infoJson.data.last_name}` : undefined,
+        location: infoJson.data?.location,
+        college: infoJson.data?.college === 'Other' ? infoJson.data?.college_other : infoJson.data?.college,
+        fileName: firstFile ? firstFile.split('-').slice(1).join('-') : undefined,
+        submittedAt: infoJson.data?.created_at,
       }
 
       setSubmissionStatus(status)
@@ -77,7 +70,7 @@ export default function DashboardPage() {
   }
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
+    try { await gpaiLogout() } catch {}
     router.push(ROUTES.SIGN_IN)
   }
 

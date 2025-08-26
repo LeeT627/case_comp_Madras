@@ -60,13 +60,6 @@ export default function HowToApplyPage() {
                 >
                   Go to GPAI Platform
                 </Button>
-                <Button 
-                  onClick={() => router.push('/sign-up')}
-                  className="w-full"
-                  variant="outline"
-                >
-                  Create Competition Account
-                </Button>
               </div>
             </CardContent>
           </Card>

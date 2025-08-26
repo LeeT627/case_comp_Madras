@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { COLLEGES, ROUTES } from '@/lib/constants'
+import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 interface ParticipantInfo {
   first_name: string
@@ -31,7 +31,6 @@ export default function InformationPage() {
   const [location, setLocation] = useState('')
   const router = useRouter()
   const { toast } = useToast()
-  const supabase = createClient()
 
   useEffect(() => {
     checkLocationAndLoadData()
@@ -39,41 +38,36 @@ export default function InformationPage() {
 
   const checkLocationAndLoadData = async () => {
     try {
-      // Check if location was selected
+      // gpai 세션 확인
+      const gpaiUser = await fetchSessionUser()
+
+      // 위치 선택 여부 확인
       const selectedLocation = localStorage.getItem('selected_location')
-      
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+
+      // 참가자 정보 로드
+      const res = await fetch('/api/participant-info', { method: 'GET' })
+      if (res.status === 401) {
         router.push(ROUTES.SIGN_IN)
         return
       }
+      const json = await res.json()
 
-      // Check if user already has participant info
-      const { data } = await supabase
-        .from('participant_info')
-        .select('*')
-        .eq('user_id', user.id)
-        .single()
-
-      if (data) {
-        // Load existing data
+      if (json.data) {
         setFormData({
-          first_name: data.first_name || '',
-          last_name: data.last_name || '',
-          reward_email: data.reward_email || '',
-          college: data.college || '',
-          college_other: data.college_other || ''
+          first_name: json.data.first_name || '',
+          last_name: json.data.last_name || '',
+          reward_email: json.data.reward_email || gpaiUser.email || '',
+          college: json.data.college || '',
+          college_other: json.data.college_other || ''
         })
-        setLocation(data.location)
+        setLocation(json.data.location)
       } else if (!selectedLocation) {
-        // No location selected, redirect back
         router.push(ROUTES.DASHBOARD_LOCATION)
         return
       } else {
         setLocation(selectedLocation)
       }
     } catch {
-      // Error or no data, check for location
       const selectedLocation = localStorage.getItem('selected_location')
       if (!selectedLocation) {
         router.push(ROUTES.DASHBOARD_LOCATION)
@@ -152,54 +146,33 @@ export default function InformationPage() {
 
     setLoading(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('No authenticated user')
-      }
-
-      // Check if record exists
-      const { data: existing } = await supabase
-        .from('participant_info')
-        .select('id')
-        .eq('user_id', user.id)
-        .single()
-
-      const participantData = {
-        user_id: user.id,
+      const payload = {
         first_name: formData.first_name.trim(),
         last_name: formData.last_name.trim(),
         reward_email: formData.reward_email.trim(),
-        location: location,
+        location,
         college: formData.college,
-        college_other: formData.college === 'Other' ? formData.college_other.trim() : null
+        college_other: formData.college === 'Other' ? formData.college_other.trim() : undefined,
       }
 
-      if (existing) {
-        // Update existing record
-        const { error } = await supabase
-          .from('participant_info')
-          .update(participantData)
-          .eq('user_id', user.id)
+      const res = await fetch('/api/participant-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
 
-        if (error) throw error
-      } else {
-        // Insert new record
-        const { error } = await supabase
-          .from('participant_info')
-          .insert(participantData)
-
-        if (error) throw error
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        throw new Error(j.error || 'Failed to save information')
       }
 
-      // Clear localStorage
       localStorage.removeItem('selected_location')
-      
+
       toast({
         title: 'Success',
         description: 'Information saved successfully',
       })
-      
-      // Navigate to upload page
+
       router.push(ROUTES.DASHBOARD_UPLOAD)
     } catch (error) {
       toast({

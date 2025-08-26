@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { FILE_UPLOAD, ROUTES } from '@/lib/constants'
+import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 interface ParticipantInfo {
   first_name: string
@@ -28,7 +28,6 @@ export default function UploadPage() {
   const [checking, setChecking] = useState(true)
   const router = useRouter()
   const { toast } = useToast()
-  const supabase = createClient()
 
   useEffect(() => {
     checkParticipantInfo()
@@ -36,21 +35,13 @@ export default function UploadPage() {
 
   const checkParticipantInfo = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push(ROUTES.SIGN_IN)
-        return
-      }
+      // gpai 세션 확인
+      const gpaiUser = await fetchSessionUser()
 
-      // Check if user has completed participant info
-      const { data, error } = await supabase
-        .from('participant_info')
-        .select('first_name, last_name, location, college, college_other, reward_email')
-        .eq('user_id', user.id)
-        .single()
-
-      if (error || !data) {
-        // No participant info, redirect to start
+      // 참가자 정보 확인
+      const infoRes = await fetch('/api/participant-info', { method: 'GET' })
+      const info = await infoRes.json()
+      if (!info?.data) {
         toast({
           title: 'Complete Your Information',
           description: 'Please complete your participant information first',
@@ -61,24 +52,20 @@ export default function UploadPage() {
       }
 
       setParticipantInfo({
-        first_name: data.first_name,
-        last_name: data.last_name,
-        location: data.location,
-        college: data.college === 'Other' ? data.college_other : data.college,
-        email: user.email || '',
-        email_reward: data.reward_email || user.email || ''
+        first_name: info.data.first_name,
+        last_name: info.data.last_name,
+        location: info.data.location,
+        college: info.data.college === 'Other' ? info.data.college_other : info.data.college,
+        email: gpaiUser.email || '',
+        email_reward: info.data.reward_email || gpaiUser.email || ''
       })
 
-      // Check if user already uploaded a file
-      const { data: files } = await supabase.storage
-        .from('uploads')
-        .list(user.id, {
-          limit: 1,
-          offset: 0,
-        })
-
-      if (files && files.length > 0) {
-        setCurrentFileName(files[0].name.split('-').slice(1).join('-'))
+      // 업로드 파일 확인
+      const listRes = await fetch('/api/uploads/list', { method: 'GET' })
+      const listJson = await listRes.json()
+      if (Array.isArray(listJson.files) && listJson.files.length > 0) {
+        const name = String(listJson.files[0])
+        setCurrentFileName(name.split('-').slice(1).join('-'))
       }
     } catch {
       router.push(ROUTES.DASHBOARD_LOCATION)
@@ -121,24 +108,18 @@ export default function UploadPage() {
   const handleDelete = async () => {
     if (!currentFileName) return
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
     setDeleting(true)
     try {
-      // Delete all existing files for this user
-      const { data: existingFiles } = await supabase.storage
-        .from('uploads')
-        .list(user.id, {
-          limit: 100,
-          offset: 0,
+      // 서버에 삭제 요청 (전체 삭제)
+      const listRes = await fetch('/api/uploads/list', { method: 'GET' })
+      const listJson = await listRes.json()
+      const files: string[] = Array.isArray(listJson.files) ? listJson.files : []
+      if (files.length > 0) {
+        await fetch('/api/uploads/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ names: files }),
         })
-
-      if (existingFiles && existingFiles.length > 0) {
-        const filesToDelete = existingFiles.map(f => `${user.id}/${f.name}`)
-        await supabase.storage
-          .from('uploads')
-          .remove(filesToDelete)
       }
 
       toast({
@@ -161,36 +142,27 @@ export default function UploadPage() {
   const handleUpload = async () => {
     if (!file) return
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
     setUploading(true)
     try {
-      // First, delete all existing files for this user
-      const { data: existingFiles } = await supabase.storage
-        .from('uploads')
-        .list(user.id, {
-          limit: 100,
-          offset: 0,
+      // 기존 파일 삭제
+      const listRes = await fetch('/api/uploads/list', { method: 'GET' })
+      const listJson = await listRes.json()
+      const files: string[] = Array.isArray(listJson.files) ? listJson.files : []
+      if (files.length > 0) {
+        await fetch('/api/uploads/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ names: files }),
         })
-
-      if (existingFiles && existingFiles.length > 0) {
-        const filesToDelete = existingFiles.map(f => `${user.id}/${f.name}`)
-        await supabase.storage
-          .from('uploads')
-          .remove(filesToDelete)
       }
 
-      // Now upload the new file
-      const fileName = `${Date.now()}-${file.name}`
-      const filePath = `${user.id}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('uploads')
-        .upload(filePath, file)
-
-      if (uploadError) {
-        throw uploadError
+      // 업로드
+      const form = new FormData()
+      form.append('file', file)
+      const uploadRes = await fetch('/api/uploads/upload', { method: 'POST', body: form })
+      if (!uploadRes.ok) {
+        const j = await uploadRes.json().catch(() => ({}))
+        throw new Error(j.error || 'Failed to upload file')
       }
 
       toast({
