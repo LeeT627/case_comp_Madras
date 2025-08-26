@@ -15,6 +15,8 @@ interface ParticipantInfo {
   last_name: string
   location: string
   college: string
+  email: string
+  email_reward?: string
 }
 
 export default function UploadPage() {
@@ -42,7 +44,7 @@ export default function UploadPage() {
       // Check if user has completed participant info
       const { data, error } = await supabase
         .from('participant_info')
-        .select('first_name, last_name, location, college, college_other')
+        .select('first_name, last_name, location, college, college_other, email_reward')
         .eq('user_id', user.id)
         .single()
 
@@ -61,7 +63,9 @@ export default function UploadPage() {
         first_name: data.first_name,
         last_name: data.last_name,
         location: data.location,
-        college: data.college === 'Other' ? data.college_other : data.college
+        college: data.college === 'Other' ? data.college_other : data.college,
+        email: user.email || '',
+        email_reward: data.email_reward || user.email || ''
       })
 
       // Check if user already uploaded a file
@@ -212,29 +216,48 @@ export default function UploadPage() {
               <CardTitle className="text-lg">Submitting as</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div>
-                  <span className="text-gray-500">Name:</span>{' '}
-                  <span className="font-medium">
-                    {participantInfo.first_name} {participantInfo.last_name}
-                  </span>
+              <div className="space-y-2 text-sm">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-gray-500">Name:</span>{' '}
+                    <span className="font-medium">
+                      {participantInfo.first_name} {participantInfo.last_name}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Location:</span>{' '}
+                    <span className="font-medium capitalize">{participantInfo.location}</span>
+                  </div>
                 </div>
                 <div>
-                  <span className="text-gray-500">Location:</span>{' '}
-                  <span className="font-medium capitalize">{participantInfo.location}</span>
-                </div>
-                <div className="col-span-2">
                   <span className="text-gray-500">College:</span>{' '}
                   <span className="font-medium">{participantInfo.college}</span>
                 </div>
+                <div>
+                  <span className="text-gray-500">Email Address (Sign up):</span>{' '}
+                  <span className="font-medium">{participantInfo.email}</span>
+                </div>
+                <div>
+                  <span className="text-gray-500">Email Address (Reward):</span>{' '}
+                  <span className="font-medium">{participantInfo.email_reward}</span>
+                </div>
               </div>
-              <Button
-                variant="link"
-                className="p-0 h-auto mt-2 text-xs"
-                onClick={() => router.push(ROUTES.DASHBOARD_INFORMATION)}
-              >
-                Edit Information
-              </Button>
+              <div className="flex items-center gap-4 mt-4">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-xs"
+                  onClick={() => router.push(ROUTES.DASHBOARD_INFORMATION)}
+                >
+                  Edit Information
+                </Button>
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-xs text-gray-600"
+                  onClick={() => router.push(ROUTES.DASHBOARD)}
+                >
+                  Submit Later
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
