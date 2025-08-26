@@ -1,24 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
-import { APP_NAME, APP_AUTHOR, AUTH_MESSAGES, ROUTES } from '@/lib/constants'
+import { APP_NAME, APP_AUTHOR } from '@/lib/constants'
 import { validateEmail } from '@/lib/email-validation'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-  const supabase = createClient()
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,8 +33,7 @@ export default function SignInPage() {
     setLoading(true)
 
     try {
-      // First, verify user exists in GPAI database
-      const verifyResponse = await fetch('/api/auth/verify-user', {
+      const response = await fetch('/api/auth/auto-signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,50 +41,32 @@ export default function SignInPage() {
         body: JSON.stringify({ email }),
       })
 
-      const verifyData = await verifyResponse.json()
+      const data = await response.json()
 
-      if (!verifyData.verified) {
+      if (!response.ok) {
         toast({
           title: 'Access Denied',
-          description: verifyData.message || AUTH_MESSAGES.ACCESS_DENIED,
+          description: data.error || 'Email not found in GPAI database',
           variant: 'destructive',
         })
-        setLoading(false)
         return
       }
 
-      // If verified in GPAI database, proceed with Supabase authentication
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      toast({
+        title: 'Success!',
+        description: 'Signing you in...',
       })
 
-      if (error) {
-        // If sign in fails, it might be because they haven't created an account yet
-        if (error.message.includes('Invalid login credentials')) {
-          toast({
-            title: 'Invalid Credentials',
-            description: 'Incorrect email or password. Please try again or sign up if you don\'t have an account.',
-            variant: 'destructive',
-          })
-        } else {
-          toast({
-            title: 'Error',
-            description: error.message,
-            variant: 'destructive',
-          })
-        }
+      // Redirect to the magic link URL to establish session
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl
       } else {
-        toast({
-          title: 'Success',
-          description: 'Signed in successfully!',
-        })
-        router.push(ROUTES.DASHBOARD)
+        router.push('/dashboard')
       }
-    } catch {
+    } catch (error) {
       toast({
         title: 'Error',
-        description: 'An unexpected error occurred',
+        description: 'An unexpected error occurred. Please try again.',
         variant: 'destructive',
       })
     } finally {
@@ -105,67 +82,59 @@ export default function SignInPage() {
           <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
         </div>
         <Card>
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-          <p className="text-sm font-medium text-gray-700 mt-2">
-            **You must create a separate account for this competition
-          </p>
-        </CardHeader>
-        <form onSubmit={handleSignIn}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">School Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.name@school.edu"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="text-sm">
-              <Link href="/reset-password" className="text-primary hover:underline">
-                Forgot your password?
-              </Link>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
-            </Button>
-            <div className="text-sm text-center text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link href="/sign-up" className="text-primary hover:underline">
-                Sign up
-              </Link>
-            </div>
-            <div className="text-sm text-center text-muted-foreground">
-              For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
-            </div>
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="w-full"
-              onClick={() => router.push('/how-to-apply')}
-            >
-              How do I apply?
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
+            <CardDescription>
+              Enter your GPAI registered email to access the competition
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSignIn}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">School Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your.name@school.edu"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+                <p className="text-xs text-gray-500">
+                  Use the same email you registered with at www.gpai.app
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Signing in...' : 'Sign In'}
+              </Button>
+              <div className="text-sm text-center text-muted-foreground">
+                Don't have a GPAI account?{' '}
+                <a 
+                  href="https://www.gpai.app" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Register at gpai.app first
+                </a>
+              </div>
+              <div className="text-sm text-center text-muted-foreground">
+                For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
+              </div>
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full"
+                onClick={() => router.push('/how-to-apply')}
+              >
+                How do I apply?
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
       </div>
     </div>
   )
