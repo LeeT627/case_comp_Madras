@@ -116,9 +116,6 @@ export default function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-2">
-                Submit your case study presentation for the GPAI Competition. Follow the steps below to complete your submission.
-              </p>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <p className="font-semibold text-gray-800 mb-2">Winnings: ₹120,000</p>
                 <div className="text-sm text-gray-700 space-y-1">
