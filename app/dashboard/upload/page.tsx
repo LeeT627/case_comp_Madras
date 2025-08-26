@@ -242,20 +242,13 @@ export default function UploadPage() {
                   <span className="font-medium">{participantInfo.email_reward}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 mt-4">
+              <div className="mt-4">
                 <Button
                   variant="link"
                   className="p-0 h-auto text-xs"
                   onClick={() => router.push(ROUTES.DASHBOARD_INFORMATION)}
                 >
                   Edit Information
-                </Button>
-                <Button
-                  variant="link"
-                  className="p-0 h-auto text-xs text-gray-600"
-                  onClick={() => router.push(ROUTES.DASHBOARD)}
-                >
-                  Submit Later
                 </Button>
               </div>
             </CardContent>
@@ -300,7 +293,7 @@ export default function UploadPage() {
               </div>
             )}
 
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <Button
                 variant="outline"
                 onClick={() => router.push(ROUTES.DASHBOARD_INFORMATION)}
@@ -308,12 +301,21 @@ export default function UploadPage() {
               >
                 Back
               </Button>
-              <Button
-                onClick={handleUpload}
-                disabled={!file || uploading}
-              >
-                {uploading ? 'Uploading...' : currentFileName ? 'Replace Submission' : 'Upload Submission'}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(ROUTES.DASHBOARD)}
+                  disabled={uploading}
+                >
+                  Submit Later
+                </Button>
+                <Button
+                  onClick={handleUpload}
+                  disabled={!file || uploading}
+                >
+                  {uploading ? 'Uploading...' : currentFileName ? 'Replace Submission' : 'Upload Submission'}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
