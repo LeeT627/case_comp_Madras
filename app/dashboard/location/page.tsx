@@ -98,47 +98,24 @@ export default function LocationPage() {
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <Label htmlFor="location">Competition Location (or choose the closest one) *</Label>
-              <div className="grid gap-3 max-h-96 overflow-y-auto">
+              <select
+                id="location"
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="">Select a location...</option>
                 {LOCATIONS.map((location) => (
-                  <div
+                  <option
                     key={location.value}
-                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                      location.available
-                        ? selectedLocation === location.value
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                        : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
-                    }`}
-                    onClick={() => location.available && setSelectedLocation(location.value)}
+                    value={location.value}
+                    disabled={!location.available}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <input
-                          type="radio"
-                          id={location.value}
-                          name="location"
-                          value={location.value}
-                          checked={selectedLocation === location.value}
-                          onChange={() => setSelectedLocation(location.value)}
-                          disabled={!location.available}
-                          className="h-4 w-4 text-blue-600"
-                        />
-                        <label
-                          htmlFor={location.value}
-                          className={`font-medium ${
-                            location.available ? 'text-gray-900' : 'text-gray-400'
-                          }`}
-                        >
-                          {location.label}
-                        </label>
-                      </div>
-                      {!location.available && (
-                        <span className="text-xs text-gray-500">Coming Soon</span>
-                      )}
-                    </div>
-                  </div>
+                    {location.label} {!location.available && '(Coming Soon)'}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
             <div className="flex justify-between pt-4">
