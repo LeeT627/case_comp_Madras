@@ -38,11 +38,11 @@ export default function HowToApplyPage() {
                     <p className="text-sm font-semibold text-red-600 mb-3">Important: Use &quot;Continue with Email&quot; option only!</p>
                     <div className="relative w-full max-w-md mx-auto">
                       <Image 
-                        src="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/gpai-signup-guide.png"
+                        src="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/guide.png"
                         alt="GPAI Signup Guide - Must use Continue with Email option"
-                        width={400}
-                        height={500}
-                        className="rounded-lg shadow-md"
+                        width={756}
+                        height={802}
+                        className="rounded-lg shadow-md w-full h-auto"
                         unoptimized
                       />
                     </div>
