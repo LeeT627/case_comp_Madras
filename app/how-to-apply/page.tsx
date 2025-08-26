@@ -22,35 +22,35 @@ export default function HowToApplyPage() {
               <CardTitle className="text-2xl">How to Apply</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <ol className="space-y-4 list-decimal list-inside">
+              <ol className="space-y-4 list-decimal pl-6">
                 <li className="text-gray-700">
-                  <span className="ml-2">You must currently be enrolled in any college or high school.</span>
+                  You must currently be enrolled in any college or high school.
                 </li>
                 <li className="text-gray-700">
-                  <span className="ml-2">
-                    Visit{' '}
-                    <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
-                      www.gpai.app
-                    </a>{' '}
-                    and sign-up using your own school email (any other email addresses such as @gmail.com will not be able to enter the competition).
-                  </span>
+                  Visit{' '}
+                  <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                    www.gpai.app
+                  </a>{' '}
+                  and sign-up using your own school email (any other email addresses such as @gmail.com will not be able to enter the competition).
                 </li>
                 <li className="text-gray-700">
-                  <span className="ml-2">Enter Contest tab on the left panel. You will be redirected to the competition page.</span>
+                  Enter Contest tab on the left panel. You will be redirected to the competition page.
                 </li>
                 <li className="text-gray-700">
-                  <span className="ml-2">
-                    You must create a separate account for the competition page. You must use the identical school email that you used for{' '}
-                    <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
-                      www.gpai.app
-                    </a>{' '}
-                    to enter the competition.
-                  </span>
+                  You must create a separate account for the competition page. You must use the identical school email that you used for{' '}
+                  <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                    www.gpai.app
+                  </a>{' '}
+                  to enter the competition.
                 </li>
                 <li className="text-gray-700">
-                  <span className="ml-2">Submit your deck to the competition portal by deadline.</span>
+                  Submit your deck to the competition portal by deadline.
                 </li>
               </ol>
+              
+              <div className="mt-4">
+                <p className="text-gray-700 font-medium">Total Winnings: ₹120,000</p>
+              </div>
 
               <div className="pt-4 space-y-3">
                 <Button 
