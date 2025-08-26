@@ -110,9 +110,6 @@ export default function SignInPage() {
           <p className="text-sm font-medium text-gray-700 mt-2">
             **Must create a separate account for competition
           </p>
-          <p className="text-sm font-medium text-red-600 mt-2">
-            {AUTH_MESSAGES.SCHOOL_EMAIL_WARNING}
-          </p>
         </CardHeader>
         <form onSubmit={handleSignIn}>
           <CardContent className="space-y-4">
