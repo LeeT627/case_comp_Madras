@@ -263,7 +263,7 @@ export default function DashboardPage() {
               <CardTitle>Competition Deadline</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-red-600">January 31, 2025</p>
+              <p className="text-2xl font-bold text-red-600">12th September, 2025 (IST)</p>
             </CardContent>
           </Card>
         </div>
