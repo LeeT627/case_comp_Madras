@@ -24,7 +24,7 @@ export default function HowToApplyPage() {
             <CardContent className="space-y-6">
               <ol className="space-y-4 list-decimal pl-6">
                 <li className="text-gray-700">
-                  You must currently be enrolled in any college or high school and have a campus email address.
+                  You must currently be enrolled in any college or high school and <strong>have a campus email address</strong>.
                 </li>
                 <li className="text-gray-700">
                   Visit{' '}
