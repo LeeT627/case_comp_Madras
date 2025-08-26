@@ -22,6 +22,7 @@ interface ParticipantInfo {
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [currentFileName, setCurrentFileName] = useState<string | null>(null)
   const [participantInfo, setParticipantInfo] = useState<ParticipantInfo | null>(null)
   const [checking, setChecking] = useState(true)
@@ -115,6 +116,46 @@ export default function UploadPage() {
     }
 
     setFile(selectedFile)
+  }
+
+  const handleDelete = async () => {
+    if (!currentFileName) return
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    setDeleting(true)
+    try {
+      // Delete all existing files for this user
+      const { data: existingFiles } = await supabase.storage
+        .from('uploads')
+        .list(user.id, {
+          limit: 100,
+          offset: 0,
+        })
+
+      if (existingFiles && existingFiles.length > 0) {
+        const filesToDelete = existingFiles.map(f => `${user.id}/${f.name}`)
+        await supabase.storage
+          .from('uploads')
+          .remove(filesToDelete)
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Your submission has been deleted.',
+      })
+
+      setCurrentFileName(null)
+    } catch (error) {
+      toast({
+        title: 'Delete failed',
+        description: error instanceof Error ? error.message : 'Failed to delete file',
+        variant: 'destructive',
+      })
+    } finally {
+      setDeleting(false)
+    }
   }
 
   const handleUpload = async () => {
@@ -265,9 +306,21 @@ export default function UploadPage() {
           <CardContent className="space-y-6">
             {currentFileName && (
               <div className="rounded-lg bg-green-50 p-3 text-sm text-green-700">
-                <p className="font-medium">Current submission:</p>
-                <p>{currentFileName}</p>
-                <p className="text-xs mt-1">Uploading a new file will replace this submission</p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium">Current submission:</p>
+                    <p>{currentFileName}</p>
+                    <p className="text-xs mt-1">You can re-upload before deadline</p>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDelete}
+                    disabled={deleting || uploading}
+                  >
+                    {deleting ? 'Deleting...' : 'Delete'}
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -297,7 +350,7 @@ export default function UploadPage() {
               <Button
                 variant="outline"
                 onClick={() => router.push(ROUTES.DASHBOARD_INFORMATION)}
-                disabled={uploading}
+                disabled={uploading || deleting}
               >
                 Back
               </Button>
@@ -305,13 +358,13 @@ export default function UploadPage() {
                 <Button
                   variant="outline"
                   onClick={() => router.push(ROUTES.DASHBOARD)}
-                  disabled={uploading}
+                  disabled={uploading || deleting}
                 >
                   Submit Later
                 </Button>
                 <Button
                   onClick={handleUpload}
-                  disabled={!file || uploading}
+                  disabled={!file || uploading || deleting}
                 >
                   {uploading ? 'Uploading...' : currentFileName ? 'Replace Submission' : 'Upload Submission'}
                 </Button>
