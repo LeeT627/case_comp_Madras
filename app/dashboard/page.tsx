@@ -264,7 +264,6 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold text-red-600">January 31, 2025</p>
-              <p className="text-sm text-gray-600 mt-1">Make sure to submit before the deadline</p>
             </CardContent>
           </Card>
         </div>
