@@ -68,8 +68,8 @@ export default function SignInPage() {
         // If sign in fails, it might be because they haven't created an account yet
         if (error.message.includes('Invalid login credentials')) {
           toast({
-            title: 'First Time Login',
-            description: 'Please sign up first to create your account, or use Magic Link below.',
+            title: 'Invalid Credentials',
+            description: 'Incorrect email or password. Please try again or sign up if you don\'t have an account.',
             variant: 'destructive',
           })
         } else {
