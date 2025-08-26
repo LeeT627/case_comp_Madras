@@ -52,14 +52,6 @@ export default function HowToApplyPage() {
                 </li>
               </ol>
 
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-6">
-                <p className="text-sm font-semibold text-gray-800 mb-2">Competition Details:</p>
-                <p className="text-sm text-gray-600">
-                  • File formats accepted: PDF, PPT, PPTX (max 20MB)<br />
-                  • Deadline: 12th September, 2025 (IST)
-                </p>
-              </div>
-
               <div className="pt-4 space-y-3">
                 <Button 
                   onClick={() => window.open('https://www.gpai.app', '_blank')}
