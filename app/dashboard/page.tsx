@@ -119,6 +119,17 @@ export default function DashboardPage() {
               <p className="text-gray-600 mb-2">
                 Submit your case study presentation for the GPAI Competition. Follow the steps below to complete your submission.
               </p>
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <p className="font-semibold text-gray-800 mb-2">Winnings: ₹120,000</p>
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p>1st: ₹30,000</p>
+                  <p>2nd: ₹12,000</p>
+                  <p>3rd: ₹7,000</p>
+                  <p>4–10: ₹2,000 each → ₹14,000</p>
+                  <p>11–50: ₹300 each → ₹12,000</p>
+                  <p>51–500: ₹100 each → ₹45,000</p>
+                </div>
+              </div>
               <p className="text-sm text-gray-600 mb-4">
                 Take me back to: <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a>
               </p>
