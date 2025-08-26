@@ -112,7 +112,7 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle>Welcome to GPAI Case Competition</CardTitle>
               <CardDescription>
-                Download the case study prompt for the competition
+                {user?.email}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -245,9 +245,6 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Winnings & Deadline</CardTitle>
-              <CardDescription>
-                {user?.email}
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
