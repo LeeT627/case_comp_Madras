@@ -155,6 +155,14 @@ export default function SignInPage() {
             <div className="text-sm text-center text-muted-foreground">
               For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
             </div>
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full"
+              onClick={() => router.push('/how-to-apply')}
+            >
+              How do I apply?
+            </Button>
           </CardFooter>
         </form>
       </Card>
