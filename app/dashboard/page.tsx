@@ -107,41 +107,6 @@ export default function DashboardPage() {
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6">
-          {/* Welcome Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Welcome to GPAI Case Competition</CardTitle>
-              <CardDescription>
-                {user?.email}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <p className="font-semibold text-gray-800 mb-2">Winnings: ₹120,000</p>
-                <div className="text-sm text-gray-700 space-y-1">
-                  <p>1st: ₹30,000</p>
-                  <p>2nd: ₹12,000</p>
-                  <p>3rd: ₹7,000</p>
-                  <p>4–10: ₹2,000 each → ₹14,000</p>
-                  <p>11–50: ₹300 each → ₹12,000</p>
-                  <p>51–500: ₹100 each → ₹45,000</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Take me back to: <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a>
-              </p>
-              <div className="border-t pt-4">
-                <p className="text-sm font-semibold text-gray-700">Competition Deadline</p>
-                <p className="text-xl font-bold text-red-600">12th September, 2025 (IST)</p>
-                <div className="mt-4">
-                  <Button onClick={() => router.push('/winners')} variant="default" className="w-full">
-                    View competition results
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Case Competition Prompt */}
           <Card>
             <CardHeader>
@@ -272,6 +237,41 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Welcome Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Welcome to GPAI Case Competition</CardTitle>
+              <CardDescription>
+                {user?.email}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <p className="font-semibold text-gray-800 mb-2">Winnings: ₹120,000</p>
+                <div className="text-sm text-gray-700 space-y-1">
+                  <p>1st: ₹30,000</p>
+                  <p>2nd: ₹12,000</p>
+                  <p>3rd: ₹7,000</p>
+                  <p>4–10: ₹2,000 each → ₹14,000</p>
+                  <p>11–50: ₹300 each → ₹12,000</p>
+                  <p>51–500: ₹100 each → ₹45,000</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Take me back to: <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a>
+              </p>
+              <div className="border-t pt-4">
+                <p className="text-sm font-semibold text-gray-700">Competition Deadline</p>
+                <p className="text-xl font-bold text-red-600">12th September, 2025 (IST)</p>
+                <div className="mt-4">
+                  <Button onClick={() => router.push('/winners')} variant="default" className="w-full">
+                    View competition results
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
