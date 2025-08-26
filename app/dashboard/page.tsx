@@ -100,10 +100,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-between items-center mb-8">
-          <Button onClick={() => router.push('/winners')} variant="default">
-            View competition results
-          </Button>
+        <div className="flex justify-end mb-8">
           <Button onClick={handleSignOut} variant="outline">
             Sign Out
           </Button>
@@ -128,6 +125,11 @@ export default function DashboardPage() {
               <div className="border-t pt-4">
                 <p className="text-sm font-semibold text-gray-700">Competition Deadline</p>
                 <p className="text-xl font-bold text-red-600">12th September, 2025 (IST)</p>
+                <div className="mt-4">
+                  <Button onClick={() => router.push('/winners')} variant="default" className="w-full">
+                    View competition results
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
