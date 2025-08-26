@@ -49,10 +49,7 @@ export default function HowToApplyPage() {
                   </div>
                 </li>
                 <li className="text-gray-700">
-                  Enter Contest tab on the left panel. You will be redirected to the competition page.
-                </li>
-                <li className="text-gray-700">
-                  You must create a separate account for the competition page. You must use the identical school email that you used for{' '}
+                  Enter Contest tab on the left panel. You will be redirected to the competition page. You must use the identical school email and password that you used for{' '}
                   <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
                     www.gpai.app
                   </a>{' '}
