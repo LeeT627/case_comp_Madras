@@ -31,6 +31,7 @@ export const ROUTES = {
 }
 
 export const LOCATIONS = [
+  { value: 'bhilai', label: 'Bhilai', available: true },
   { value: 'bhubaneswar', label: 'Bhubaneswar', available: true },
   { value: 'chennai', label: 'Chennai', available: true },
   { value: 'delhi', label: 'Delhi', available: true },
