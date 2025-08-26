@@ -1,6 +1,8 @@
+// ===== APPLICATION BRANDING =====
 export const APP_NAME = 'GPAI Case Competition'
 export const APP_AUTHOR = 'by TeamTuring'
 
+// ===== FILE UPLOAD CONFIGURATION =====
 export const FILE_UPLOAD = {
   MAX_SIZE: 20 * 1024 * 1024, // 20MB
   ALLOWED_EXTENSIONS: ['pdf', 'ppt', 'pptx'],
@@ -11,6 +13,7 @@ export const FILE_UPLOAD = {
   ]
 }
 
+// ===== AUTHENTICATION MESSAGES =====
 export const AUTH_MESSAGES = {
   SCHOOL_EMAIL_WARNING: 'Please use your SCHOOL email used to sign up to gpai.app. Other addresses will not be able to enter competition.',
   SPAM_FOLDER_WARNING: "If you don't see your verification email, please check your spam folder.",
@@ -20,6 +23,7 @@ export const AUTH_MESSAGES = {
   TEMP_EMAIL_BLOCKED: 'Temporary or disposable email addresses are not allowed. Please use your school email.'
 }
 
+// ===== APPLICATION ROUTES =====
 export const ROUTES = {
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
@@ -30,6 +34,7 @@ export const ROUTES = {
   RESET_PASSWORD: '/reset-password'
 }
 
+// ===== COMPETITION LOCATIONS =====
 export const LOCATIONS = [
   { value: 'bhilai', label: 'Bhilai', available: true },
   { value: 'bhubaneswar', label: 'Bhubaneswar', available: true },
@@ -56,6 +61,8 @@ export const LOCATIONS = [
   { value: 'varanasi', label: 'Varanasi', available: true },
 ]
 
+// ===== DELHI COLLEGES LIST =====
+// Note: This is currently Delhi-specific but can be expanded for other locations
 export const COLLEGES = [
   'IIT Delhi - Indian Institute of Technology',
   'Jamia Millia Islamia',

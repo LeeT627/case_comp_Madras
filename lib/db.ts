@@ -1,3 +1,13 @@
+/**
+ * GPAI Database Connection Module
+ * 
+ * This module handles the connection to the GPAI competition database
+ * and provides functions to verify user registration status.
+ * 
+ * Security Note: Only users registered in the main GPAI database
+ * are allowed to create accounts and submit to the competition.
+ */
+
 import { Pool } from 'pg'
 
 // Create a connection pool for better performance
