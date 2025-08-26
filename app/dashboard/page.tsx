@@ -120,6 +120,13 @@ export default function DashboardPage() {
               <p className="text-gray-600 mb-4">
                 Submit your case study presentation for the GPAI Competition. Follow the steps below to complete your submission.
               </p>
+              <div className="border-t pt-4 mt-4">
+                <p className="text-sm font-semibold text-gray-700">Competition Deadline</p>
+                <p className="text-xl font-bold text-red-600">12th September, 2025 (IST)</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Visit <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a> for more information
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -257,15 +264,6 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Deadline Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Competition Deadline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-red-600">12th September, 2025 (IST)</p>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
