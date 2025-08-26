@@ -44,7 +44,7 @@ export default function UploadPage() {
       // Check if user has completed participant info
       const { data, error } = await supabase
         .from('participant_info')
-        .select('first_name, last_name, location, college, college_other, email_reward')
+        .select('first_name, last_name, location, college, college_other, reward_email')
         .eq('user_id', user.id)
         .single()
 
@@ -65,7 +65,7 @@ export default function UploadPage() {
         location: data.location,
         college: data.college === 'Other' ? data.college_other : data.college,
         email: user.email || '',
-        email_reward: data.email_reward || user.email || ''
+        email_reward: data.reward_email || user.email || ''
       })
 
       // Check if user already uploaded a file

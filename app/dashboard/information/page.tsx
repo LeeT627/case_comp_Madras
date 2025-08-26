@@ -13,7 +13,7 @@ import { COLLEGES, ROUTES } from '@/lib/constants'
 interface ParticipantInfo {
   first_name: string
   last_name: string
-  email_reward: string
+  reward_email: string
   college: string
   college_other: string
 }
@@ -22,7 +22,7 @@ export default function InformationPage() {
   const [formData, setFormData] = useState<ParticipantInfo>({
     first_name: '',
     last_name: '',
-    email_reward: '',
+    reward_email: '',
     college: '',
     college_other: ''
   })
@@ -60,7 +60,7 @@ export default function InformationPage() {
         setFormData({
           first_name: data.first_name || '',
           last_name: data.last_name || '',
-          email_reward: data.email_reward || '',
+          reward_email: data.reward_email || '',
           college: data.college || '',
           college_other: data.college_other || ''
         })
@@ -110,7 +110,7 @@ export default function InformationPage() {
       })
       return false
     }
-    if (!formData.email_reward.trim()) {
+    if (!formData.reward_email.trim()) {
       toast({
         title: 'Email address is required',
         variant: 'destructive',
@@ -134,7 +134,7 @@ export default function InformationPage() {
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email_reward)) {
+    if (!emailRegex.test(formData.reward_email)) {
       toast({
         title: 'Invalid email format',
         variant: 'destructive',
@@ -168,7 +168,7 @@ export default function InformationPage() {
         user_id: user.id,
         first_name: formData.first_name.trim(),
         last_name: formData.last_name.trim(),
-        email_reward: formData.email_reward.trim(),
+        reward_email: formData.reward_email.trim(),
         location: location,
         college: formData.college,
         college_other: formData.college === 'Other' ? formData.college_other.trim() : null
@@ -273,12 +273,12 @@ export default function InformationPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email_reward">Email Address for Rewards *</Label>
+                <Label htmlFor="reward_email">Email Address for Rewards *</Label>
                 <Input
-                  id="email_reward"
-                  name="email_reward"
+                  id="reward_email"
+                  name="reward_email"
                   type="email"
-                  value={formData.email_reward}
+                  value={formData.reward_email}
                   onChange={handleInputChange}
                   placeholder="your.email@example.com"
                   required
