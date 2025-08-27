@@ -50,32 +50,34 @@ export default function SignInPage() {
       setTimeout(() => {
         window.location.href = '/dashboard'
       }, 500)
-    } catch (error: any) {
+    } catch (error) {
       let errorTitle = 'Error'
       let errorMessage = 'Sign in failed. Please try again.'
       
-      if (error.status === 401) {
+      const apiError = error as { status?: number; body?: unknown; message?: string }
+      
+      if (apiError.status === 401) {
         // Unauthorized - wrong credentials or not registered
         errorTitle = 'Authentication Failed'
         errorMessage = 'Incorrect email or password. Please check your credentials and try again.'
         
         // Check if the error body has more specific info
-        if (error.body && typeof error.body === 'object') {
-          const errorBody = error.body as any
+        if (apiError.body && typeof apiError.body === 'object') {
+          const errorBody = apiError.body as { message?: string; error?: string }
           if (errorBody.message?.includes('not found') || errorBody.error?.includes('not found')) {
             errorTitle = 'Account Not Found'
             errorMessage = 'Please register on www.gpai.app first to get started.'
           }
         }
-      } else if (error.status === 404) {
+      } else if (apiError.status === 404) {
         // User not found
         errorTitle = 'Account Not Found'
         errorMessage = 'Please register on www.gpai.app first to get started.'
-      } else if (error.status >= 500) {
+      } else if (apiError.status && apiError.status >= 500) {
         // Server error
         errorTitle = 'Server Error'
         errorMessage = 'Failed to connect to GPAI servers. Please try again later.'
-      } else if (error.message?.includes('fetch')) {
+      } else if (apiError.message?.includes('fetch')) {
         // Network error
         errorTitle = 'Connection Error'
         errorMessage = 'Failed to connect to the server. Please check your internet connection.'
