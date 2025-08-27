@@ -10,13 +10,7 @@ import { useToast } from '@/hooks/use-toast'
 import { APP_NAME, APP_AUTHOR } from '@/lib/constants'
 import { validateEmail } from '@/lib/email-validation'
 import { loginWithPassword } from '@/lib/gpaiAuth'
-
-declare global {
-  interface Window {
-    google: any
-    handleGoogleSignIn: (response: any) => void
-  }
-}
+import { CredentialResponse } from 'google.accounts'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -64,9 +58,9 @@ export default function SignInPage() {
         script.parentNode.removeChild(script)
       }
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleGoogleCallback = async (response: any) => {
+  const handleGoogleCallback = async (response: CredentialResponse) => {
     setLoading(true)
     try {
       // Send credential to our API

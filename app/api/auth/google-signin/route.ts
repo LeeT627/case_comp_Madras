@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-// This is our fake Google sign-in that pretends to be connected to GPAI
+// Real Google authentication stored in OUR Supabase (not GPAI)
+// But we make it LOOK like it's connected to GPAI for users
 export async function POST(request: Request) {
   try {
     const { credential } = await request.json()

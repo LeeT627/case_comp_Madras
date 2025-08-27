@@ -1,4 +1,6 @@
--- Create table for Google users (separate from GPAI)
+-- Create table for Google Sign-In users
+-- These are REAL Google authenticated users stored in OUR database
+-- NOT connected to GPAI, but UI makes it appear so
 CREATE TABLE IF NOT EXISTS google_users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
