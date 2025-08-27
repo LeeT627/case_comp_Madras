@@ -21,7 +21,11 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient()
     const paths = targets.map((n) => `${user.id}/${n}`)
     const { error } = await supabase.storage.from('uploads').remove(paths)
-    if (error) return NextResponse.json({ error: 'Failed to delete' }, { status: 500 })
+    
+    if (error) {
+      console.error('[uploads/delete] Error:', error)
+      return NextResponse.json({ error: 'Failed to delete' }, { status: 500 })
+    }
 
     return NextResponse.json({ ok: true })
   } catch {

@@ -18,7 +18,9 @@ export async function GET() {
       .eq('user_id', user.id)
       .single()
 
+    // PGRST116 means no rows found - this is OK for new users
     if (error && error.code !== 'PGRST116') {
+      console.error('[participant-info GET] Error:', error)
       return NextResponse.json({ error: 'Failed to load participant info' }, { status: 500 })
     }
 

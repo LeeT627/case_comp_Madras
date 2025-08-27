@@ -27,7 +27,10 @@ export async function POST(request: NextRequest) {
       upsert: false,
     })
 
-    if (error) return NextResponse.json({ error: 'Failed to upload' }, { status: 500 })
+    if (error) {
+      console.error('[uploads/upload] Error:', error)
+      return NextResponse.json({ error: 'Failed to upload' }, { status: 500 })
+    }
 
     return NextResponse.json({ ok: true, fileName: file.name })
   } catch {
