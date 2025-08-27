@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,12 +11,97 @@ import { APP_NAME, APP_AUTHOR } from '@/lib/constants'
 import { validateEmail } from '@/lib/email-validation'
 import { loginWithPassword } from '@/lib/gpaiAuth'
 
+declare global {
+  interface Window {
+    google: any
+    handleGoogleSignIn: (response: any) => void
+  }
+}
+
 export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [googleLoaded, setGoogleLoaded] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+
+  useEffect(() => {
+    // Load Google Sign-In script
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => {
+      setGoogleLoaded(true)
+      // Initialize Google Sign-In
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: '851936510896-p5cmi1aqgojf9kqtcvq5m8n8jkrv7m6d.apps.googleusercontent.com', // Public client ID
+          callback: handleGoogleCallback,
+          auto_select: false,
+          itp_support: true
+        })
+        
+        // Render the Google Sign-In button
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-signin-button'),
+          {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            text: 'signin_with',
+            width: 384
+          }
+        )
+      }
+    }
+    document.body.appendChild(script)
+    
+    return () => {
+      // Cleanup
+      if (script.parentNode) {
+        script.parentNode.removeChild(script)
+      }
+    }
+  }, [])
+
+  const handleGoogleCallback = async (response: any) => {
+    setLoading(true)
+    try {
+      // Send credential to our API
+      const res = await fetch('/api/auth/google-signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.credential }),
+      })
+
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.error || 'Google sign-in failed')
+      }
+
+      const data = await res.json()
+      
+      toast({ 
+        title: 'Success!', 
+        description: data.message || 'Signed in with Google successfully.'
+      })
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        window.location.href = '/dashboard'
+      }, 500)
+      
+    } catch (error) {
+      toast({
+        title: 'Google Sign-In Failed',
+        description: error instanceof Error ? error.message : 'Failed to sign in with Google',
+        variant: 'destructive',
+      })
+      setLoading(false)
+    }
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -141,6 +226,30 @@ export default function SignInPage() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
+              
+              <div className="relative w-full">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-muted-foreground">
+                    Or sign in with your GPAI account
+                  </span>
+                </div>
+              </div>
+              
+              <div className="w-full">
+                {googleLoaded ? (
+                  <div id="google-signin-button" className="w-full flex justify-center"></div>
+                ) : (
+                  <div className="w-full h-11 bg-gray-100 rounded animate-pulse flex items-center justify-center text-gray-400">
+                    Loading Google Sign-In...
+                  </div>
+                )}
+                <p className="text-xs text-center text-gray-500 mt-2">
+                  Sign in with the Google account linked to your GPAI profile
+                </p>
+              </div>
               
               <div className="text-sm text-center text-muted-foreground">
                 For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
