@@ -1,33 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers, cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { GPAI_API_BASE } from '@/lib/gpaiClient'
+import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 export async function GET() {
   try {
-    const hdrs = await headers()
-    const cookieStore = await cookies()
+    // Get authenticated user from GPAI
+    const user = await fetchSessionUser()
     
-    // Check if this is a Google user
-    const authMethod = cookieStore.get('auth_method')?.value
-    const gpaiSession = cookieStore.get('gpai_session')?.value
-    
-    let user: { id: string; email: string; name?: string; first_name?: string; last_name?: string }
-    
-    if (authMethod === 'google' && gpaiSession) {
-      // This is our fake GPAI session from Google Sign-In
-      user = JSON.parse(gpaiSession)
-      console.log('[participant-info GET] Google User (fake GPAI):', user)
-    } else {
-      // Regular GPAI authentication
-      const cookie = hdrs.get('cookie') ?? ''
-      const me = await fetch(`${GPAI_API_BASE}/api/auth/me`, {
-        method: 'GET',
-        headers: { Accept: 'application/json', Cookie: cookie },
-      })
-      if (!me.ok) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      user = await me.json()
-      console.log('[participant-info GET] GPAI User:', user)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const supabase = createAdminClient()
@@ -51,27 +33,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const hdrs = await headers()
-    const cookieStore = await cookies()
+    // Get authenticated user from GPAI
+    const user = await fetchSessionUser()
     
-    // Check if this is a Google user
-    const authMethod = cookieStore.get('auth_method')?.value
-    const gpaiSession = cookieStore.get('gpai_session')?.value
-    
-    let user: { id: string; email: string; name?: string; first_name?: string; last_name?: string }
-    
-    if (authMethod === 'google' && gpaiSession) {
-      // This is our fake GPAI session from Google Sign-In
-      user = JSON.parse(gpaiSession)
-    } else {
-      // Regular GPAI authentication
-      const cookie = hdrs.get('cookie') ?? ''
-      const me = await fetch(`${GPAI_API_BASE}/api/auth/me`, {
-        method: 'GET',
-        headers: { Accept: 'application/json', Cookie: cookie },
-      })
-      if (!me.ok) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      user = await me.json()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const supabase = createAdminClient()

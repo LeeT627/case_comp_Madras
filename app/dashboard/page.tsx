@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ROUTES } from '@/lib/constants'
-import { fetchSessionUser, logout as gpaiLogout } from '@/lib/gpaiAuth'
+import { fetchSessionUser, logout } from '@/lib/gpaiAuth'
 
 interface SubmissionStatus {
   hasParticipantInfo: boolean
@@ -29,7 +29,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkUserAndStatus = async () => {
       try {
-        // gpai 세션 확인 및 유저 정보 확보
+        // GPAI 세션 확인 및 유저 정보 확보
         const gpaiUser = await fetchSessionUser()
         setUser({ id: gpaiUser.id, email: gpaiUser.email })
 
@@ -68,8 +68,15 @@ export default function DashboardPage() {
   }, [router])
 
   const handleSignOut = async () => {
-    try { await gpaiLogout() } catch {}
-    router.push(ROUTES.SIGN_IN)
+    try {
+      await logout()
+      // Redirect to main GPAI app after logout
+      window.location.href = 'https://gpai.app/login?signout=true'
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // Even if logout fails, redirect to sign-in
+      router.push(ROUTES.SIGN_IN)
+    }
   }
 
   if (loading) {
@@ -94,8 +101,9 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Welcome to GPAI Case Competition</CardTitle>
-              <CardDescription>
-                {user?.email}
+              <CardDescription className="space-y-1">
+                <div className="text-xs text-muted-foreground">User ID: {user?.id}</div>
+                <div>{user?.email}</div>
               </CardDescription>
             </CardHeader>
             <CardContent>

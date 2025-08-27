@@ -1,41 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GPAI_API_BASE } from './lib/gpaiClient'
+
+const GPAI_API_URL = 'https://api-prod.gpai.app'
 
 export async function middleware(request: NextRequest) {
-  // Protect dashboard routes using gpai session
+  // Skip auth check for public routes
+  const pathname = request.nextUrl.pathname
+  if (pathname.startsWith('/sign-in') || pathname.startsWith('/how-to-apply') || pathname === '/') {
+    return NextResponse.next()
+  }
+
+  // Check authentication with GPAI backend
   try {
-    const cookie = request.headers.get('cookie') ?? ''
-    console.log('[Middleware] Cookie:', cookie)
-    console.log('[Middleware] Checking auth at:', `${GPAI_API_BASE}/api/auth/me`)
+    // Get sessionId cookie
+    const sessionId = request.cookies.get('sessionId')?.value
     
-    const res = await fetch(`${GPAI_API_BASE}/api/auth/me`, {
+    if (!sessionId) {
+      // No session cookie, redirect to sign-in
+      const url = new URL('/sign-in', request.url)
+      return NextResponse.redirect(url)
+    }
+    
+    // Verify session with GPAI API
+    const res = await fetch(`${GPAI_API_URL}/api/auth/me`, {
       method: 'GET',
       headers: { 
-        Accept: 'application/json', 
-        Cookie: cookie,
-        'User-Agent': 'middleware'
+        'Content-Type': 'application/json',
+        'Cookie': `sessionId=${sessionId}`,
       },
     })
     
-    console.log('[Middleware] Auth response status:', res.status)
-    
     if (res.ok) {
-      const userData = await res.json()
-      console.log('[Middleware] Auth success, user:', userData?.email)
+      // User is authenticated, allow access
       return NextResponse.next()
-    } else {
-      const errorData = await res.text()
-      console.log('[Middleware] Auth failed:', res.status, errorData)
     }
   } catch (error) {
-    console.log('[Middleware] Auth error:', error)
+    console.error('[Middleware] Auth check failed:', error)
   }
   
-  console.log('[Middleware] Redirecting to sign-in')
+  // Not authenticated, redirect to sign-in
   const url = new URL('/sign-in', request.url)
   return NextResponse.redirect(url)
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: [
+    '/dashboard/:path*',
+    '/api/participant-info',
+    '/api/uploads/:path*',
+  ],
 }

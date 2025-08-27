@@ -1,26 +1,36 @@
-import { getJson, postJson } from './gpaiClient'
 import type { GpaiUser } from './gpaiTypes'
 
-export interface PasswordLoginPayload {
-  email: string
-  password: string
-}
-
-export async function loginWithPassword(email: string, password: string): Promise<GpaiUser> {
-  const payload: PasswordLoginPayload = {
-    email,
-    password,
-  }
-  const response = await postJson<{ user?: GpaiUser } & GpaiUser, PasswordLoginPayload>('/api/auth/login/password', payload)
-  return response.user || response
-}
+// GPAI Auth API client
+const GPAI_API_URL = 'https://api-prod.gpai.app'
 
 export async function fetchSessionUser(): Promise<GpaiUser> {
-  const response = await getJson<{ user?: GpaiUser } & GpaiUser>('/api/auth/me')
-  return response.user || response
+  const response = await fetch(`${GPAI_API_URL}/api/auth/me`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error('Not authenticated')
+  }
+
+  return response.json()
 }
 
 export async function logout(): Promise<void> {
-  await postJson<unknown, Record<string, never>>('/api/auth/logout', {})
+  const response = await fetch(`${GPAI_API_URL}/api/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  })
+
+  if (!response.ok) {
+    throw new Error('Logout failed')
+  }
 }
 

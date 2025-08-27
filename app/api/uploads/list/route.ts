@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server'
-import { headers } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { GPAI_API_BASE } from '@/lib/gpaiClient'
+import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 export async function GET() {
   try {
-    const hdrs = await headers()
-    const cookie = hdrs.get('cookie') ?? ''
-    const me = await fetch(`${GPAI_API_BASE}/api/auth/me`, {
-      method: 'GET',
-      headers: { Accept: 'application/json', Cookie: cookie },
-    })
-    if (!me.ok) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const user = await me.json()
+    // Get authenticated user from GPAI
+    const user = await fetchSessionUser()
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const supabase = createAdminClient()
     const { data, error } = await supabase.storage.from('uploads').list(user.id, { limit: 100, offset: 0 })
