@@ -142,17 +142,6 @@ export default function SignInPage() {
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
               <div className="text-sm text-center text-muted-foreground">
-                Don’t have a GPAI account?{' '}
-                <a 
-                  href="https://www.gpai.app" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Register at gpai.app first
-                </a>
-              </div>
-              <div className="text-sm text-center text-muted-foreground">
                 For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
               </div>
               <Button 
