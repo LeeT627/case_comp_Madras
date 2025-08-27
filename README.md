@@ -1,13 +1,13 @@
-# GPAI Case Competition File Upload Platform
+# GPAI Case Competition Platform
 
-A secure file upload platform for GPAI Case Competition participants. Built with Next.js 14, Supabase, and Tailwind CSS.
+A secure submission platform for GPAI Case Competition participants. Integrated with GPAI main authentication system.
 
 ## Features
 
-- User authentication (Sign up, Sign in, Password reset)
+- Integrated GPAI authentication (uses main gpai.app login)
 - File upload support for PDF and PowerPoint files (max 20MB)
-- Dashboard with file management
-- Deadline display
+- Dashboard with file management and submission tracking
+- Real-time deadline display
 - Modern, responsive UI with Shadcn/UI components
 
 ## Tech Stack
