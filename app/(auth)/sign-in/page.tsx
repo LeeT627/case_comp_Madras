@@ -12,7 +12,7 @@ export default function SignInPage() {
   useEffect(() => {
     // Check if already authenticated
     checkAuth()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   
   const checkAuth = async () => {
     try {
@@ -63,7 +63,7 @@ export default function SignInPage() {
             </Button>
             
             <div className="text-sm text-center text-muted-foreground">
-              Don't have an account? 
+              Don&apos;t have an account? 
               <a 
                 href="https://gpai.app/signup" 
                 className="text-primary hover:underline font-medium ml-1"

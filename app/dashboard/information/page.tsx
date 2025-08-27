@@ -36,7 +36,7 @@ export default function InformationPage() {
 
   useEffect(() => {
     checkLocationAndLoadData()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkLocationAndLoadData = async () => {
     try {

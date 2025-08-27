@@ -18,7 +18,7 @@ export default function LocationPage() {
 
   useEffect(() => {
     checkExistingInfo()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkExistingInfo = async () => {
     try {

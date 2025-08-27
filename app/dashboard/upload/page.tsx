@@ -31,7 +31,7 @@ export default function UploadPage() {
 
   useEffect(() => {
     checkParticipantInfo()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkParticipantInfo = async () => {
     try {

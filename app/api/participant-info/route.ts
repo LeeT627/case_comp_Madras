@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { headers, cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { fetchSessionUser } from '@/lib/gpaiAuth'
 

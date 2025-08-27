@@ -1,6 +1,6 @@
 // Deprecated: Supabase middleware removed.
 import { type NextRequest, NextResponse } from 'next/server'
 
-export async function updateSession(_request: NextRequest) {
+export async function updateSession() {
   return NextResponse.next()
 }
