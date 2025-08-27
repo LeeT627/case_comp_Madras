@@ -10,7 +10,10 @@ import { useToast } from '@/hooks/use-toast'
 import { APP_NAME, APP_AUTHOR } from '@/lib/constants'
 import { validateEmail } from '@/lib/email-validation'
 import { loginWithPassword } from '@/lib/gpaiAuth'
-import { CredentialResponse } from 'google.accounts'
+
+interface CredentialResponse {
+  credential: string
+}
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
