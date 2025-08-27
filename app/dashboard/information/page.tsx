@@ -198,8 +198,7 @@ export default function InformationPage() {
   }
 
   return (
-    <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
         <div className="container mx-auto px-4 max-w-2xl">
         {/* Progress Indicator */}
         <div className="mb-8">
@@ -253,16 +252,21 @@ export default function InformationPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="reward_email">Email Address for Prize *</Label>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex items-center justify-center">
-                        <HelpCircle className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>This is the email address which your winnings will be sent to. This is to verify your student status</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex">
+                          <HelpCircle 
+                            className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-help" 
+                            title="This is the email address which your winnings will be sent to. This is to verify your student status"
+                          />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>This is the email address which your winnings will be sent to. This is to verify your student status</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <Input
                   id="reward_email"
@@ -333,6 +337,5 @@ export default function InformationPage() {
         </Card>
       </div>
     </div>
-    </TooltipProvider>
   )
 }
