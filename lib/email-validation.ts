@@ -57,6 +57,7 @@ const TEMPORARY_EMAIL_DOMAINS = [
 
 // Common personal email domains that should be blocked
 const PERSONAL_EMAIL_DOMAINS = [
+  'gmail.com',
   'yahoo.com',
   'yahoo.co.uk',
   'yahoo.fr',
