@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { COLLEGES, ROUTES } from '@/lib/constants'
 import { fetchSessionUser } from '@/lib/gpaiAuth'
+import { validateEmail } from '@/lib/email-validation'
 
 interface ParticipantInfo {
   first_name: string
@@ -126,11 +127,12 @@ export default function InformationPage() {
       return false
     }
     
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.reward_email)) {
+    // Validate email format and check against blocked domains
+    const emailValidation = validateEmail(formData.reward_email)
+    if (!emailValidation.isValid) {
       toast({
-        title: 'Invalid email format',
+        title: 'Invalid Email',
+        description: emailValidation.error,
         variant: 'destructive',
       })
       return false
@@ -258,7 +260,7 @@ export default function InformationPage() {
                   disabled={loading}
                 />
                 <p className="text-xs text-gray-500">
-                  This email will be used to send your rewards if you win
+                  You MUST use your school email address
                 </p>
               </div>
 
