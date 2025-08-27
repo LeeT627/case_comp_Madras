@@ -1,18 +1,19 @@
 import { NextResponse } from 'next/server'
+import { headers } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 export async function GET() {
   try {
-    // Get authenticated user from GPAI
-    const user = await fetchSessionUser()
+    // Get user ID from middleware headers
+    const hdrs = await headers()
+    const userId = hdrs.get('x-user-id')
     
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const supabase = createAdminClient()
-    const { data, error } = await supabase.storage.from('uploads').list(user.id, { limit: 100, offset: 0 })
+    const { data, error } = await supabase.storage.from('uploads').list(userId, { limit: 100, offset: 0 })
     
     if (error) {
       // If folder doesn't exist, return empty array instead of error

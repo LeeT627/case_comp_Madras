@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { headers } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 export async function GET() {
   try {
-    // Get authenticated user from GPAI
-    const user = await fetchSessionUser()
+    // Get user ID from middleware headers
+    const hdrs = await headers()
+    const userId = hdrs.get('x-user-id')
     
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -15,7 +16,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('participant_info')
       .select('first_name, last_name, location, college, college_other, reward_email, created_at')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .single()
 
     // PGRST116 means no rows found - this is OK for new users
@@ -34,10 +35,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user from GPAI
-    const user = await fetchSessionUser()
+    // Get user ID from middleware headers
+    const hdrs = await headers()
+    const userId = hdrs.get('x-user-id')
     
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -49,7 +51,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
     const payload = {
-      user_id: user.id as string,
+      user_id: userId,
       first_name: String(first_name),
       last_name: String(last_name),
       reward_email: String(reward_email),

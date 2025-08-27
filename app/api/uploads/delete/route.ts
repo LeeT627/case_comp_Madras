@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { headers } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user from GPAI
-    const user = await fetchSessionUser()
+    // Get user ID from middleware headers
+    const hdrs = await headers()
+    const userId = hdrs.get('x-user-id')
     
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
     if (targets.length === 0) return NextResponse.json({ ok: true })
 
     const supabase = createAdminClient()
-    const paths = targets.map((n) => `${user.id}/${n}`)
+    const paths = targets.map((n) => `${userId}/${n}`)
     const { error } = await supabase.storage.from('uploads').remove(paths)
     
     if (error) {

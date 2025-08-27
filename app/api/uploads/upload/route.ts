@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { headers } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { fetchSessionUser } from '@/lib/gpaiAuth'
 
 export async function POST(request: NextRequest) {
   try {
-    // Get authenticated user from GPAI
-    const user = await fetchSessionUser()
+    // Get user ID from middleware headers
+    const hdrs = await headers()
+    const userId = hdrs.get('x-user-id')
     
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fileName = `${Date.now()}-${file.name}`
-    const path = `${user.id}/${fileName}`
+    const path = `${userId}/${fileName}`
 
     const supabase = createAdminClient()
     const arrayBuffer = await file.arrayBuffer()

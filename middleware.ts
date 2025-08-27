@@ -30,8 +30,19 @@ export async function middleware(request: NextRequest) {
     })
     
     if (res.ok) {
-      // User is authenticated, allow access
-      return NextResponse.next()
+      // User is authenticated
+      const userData = await res.json()
+      
+      // Add user info to request headers for API routes
+      const requestHeaders = new Headers(request.headers)
+      requestHeaders.set('x-user-id', userData.id)
+      requestHeaders.set('x-user-email', userData.email)
+      
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      })
     }
   } catch (error) {
     console.error('[Middleware] Auth check failed:', error)
