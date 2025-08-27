@@ -8,6 +8,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { HelpCircle } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { COLLEGES, ROUTES } from '@/lib/constants'
 import { fetchSessionUser } from '@/lib/gpaiAuth'
 import { validateEmail } from '@/lib/email-validation'
@@ -251,12 +257,16 @@ export default function InformationPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="reward_email">Email Address for Prize *</Label>
-                  <div 
-                    className="inline-block"
-                    title="This is the email address which your winnings will be sent to. This is to verify your student status"
-                  >
-                    <HelpCircle className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-help" />
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>This is the email address which your winnings will be sent to. This is to verify your student status</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <Input
                   id="reward_email"
