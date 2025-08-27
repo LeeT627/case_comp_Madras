@@ -255,11 +255,11 @@ export default function InformationPage() {
                   <TooltipProvider>
                     <Tooltip delayDuration={0}>
                       <TooltipTrigger asChild>
-                        <span className="inline-flex">
-                          <HelpCircle 
-                            className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-help" 
-                            title="This is the email address which your winnings will be sent to. This is to verify your student status"
-                          />
+                        <span 
+                          className="inline-flex"
+                          title="This is the email address which your winnings will be sent to. This is to verify your student status"
+                        >
+                          <HelpCircle className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-help" />
                         </span>
                       </TooltipTrigger>
                       <TooltipContent>
