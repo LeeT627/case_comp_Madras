@@ -192,8 +192,8 @@ export default function SignInPage() {
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-            <CardDescription>
-              Enter your GPAI registered email and password to access the competition
+            <CardDescription className="text-red-600 font-medium">
+              Please sign in with your gpai.app credentials. If you do not have a gpai.app account, please sign up on gpai.app first.
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSignIn}>
@@ -209,9 +209,6 @@ export default function SignInPage() {
                   required
                   disabled={loading}
                 />
-                <p className="text-xs text-gray-500">
-                  Use the same email you registered with at www.gpai.app
-                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -237,16 +234,13 @@ export default function SignInPage() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-white px-2 text-muted-foreground">
-                    Or sign in with your GPAI account
+                    Or
                   </span>
                 </div>
               </div>
               
               <div className="w-full">
                 <div id="google-signin-button" className="w-full flex justify-center"></div>
-                <p className="text-xs text-center text-gray-500 mt-2">
-                  Sign in with the Google account linked to your GPAI profile
-                </p>
               </div>
               
               <div className="text-sm text-center text-muted-foreground">
