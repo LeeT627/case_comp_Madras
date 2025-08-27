@@ -251,12 +251,12 @@ export default function InformationPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="reward_email">Email Address for Prize *</Label>
-                  <span 
-                    className="inline-flex"
+                  <div 
+                    className="inline-block"
                     title="This is the email address which your winnings will be sent to. This is to verify your student status"
                   >
                     <HelpCircle className="h-4 w-4 text-gray-400 hover:text-gray-600 cursor-help" />
-                  </span>
+                  </div>
                 </div>
                 <Input
                   id="reward_email"
