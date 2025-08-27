@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -17,6 +18,50 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setLoading(true)
+    try {
+      // Decode the JWT to get user email
+      const base64Url = credentialResponse.credential.split('.')[1]
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+      const jsonPayload = decodeURIComponent(
+        atob(base64).split('').map((c) => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        }).join('')
+      )
+      const { email } = JSON.parse(jsonPayload)
+
+      // Call our API to verify against GPAI database
+      const res = await fetch('/api/auth/google-verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.error || 'Google sign-in failed')
+      }
+
+      toast({ 
+        title: 'Success!', 
+        description: 'Signed in with Google successfully.' 
+      })
+      
+      setTimeout(() => {
+        window.location.href = '/dashboard'
+      }, 500)
+    } catch (error) {
+      toast({
+        title: 'Google Sign-In Failed',
+        description: error instanceof Error ? error.message : 'Failed to sign in with Google',
+        variant: 'destructive',
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -94,13 +139,14 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
-          <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
-        </div>
-        <Card>
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
+            <p className="text-lg text-gray-600 mt-1">{APP_AUTHOR}</p>
+          </div>
+          <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
             <CardDescription>
@@ -141,6 +187,36 @@ export default function SignInPage() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
+              
+              <div className="relative w-full">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <div className="w-full flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    toast({
+                      title: 'Google Sign-In Error',
+                      description: 'Failed to sign in with Google',
+                      variant: 'destructive',
+                    })
+                  }}
+                  useOneTap
+                  text="signin_with"
+                  shape="rectangular"
+                  theme="outline"
+                  size="large"
+                  width="384"
+                />
+              </div>
               <div className="text-sm text-center text-muted-foreground">
                 For help please email: <a href="mailto:global@teamturing.com" className="text-primary hover:underline">global@teamturing.com</a>
               </div>
@@ -157,5 +233,6 @@ export default function SignInPage() {
         </Card>
       </div>
     </div>
+    </GoogleOAuthProvider>
   )
 }
