@@ -119,7 +119,7 @@ export function validateEmail(email: string): EmailValidationResult {
   if (PERSONAL_EMAIL_DOMAINS.includes(domain)) {
     return {
       isValid: false,
-      error: 'Please use your school email address. Personal email addresses are not allowed.'
+      error: 'Please use your school email address. Personal email addresses are not allowed. This is to verify your student status.'
     }
   }
 
