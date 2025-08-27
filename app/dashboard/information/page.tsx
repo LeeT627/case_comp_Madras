@@ -198,8 +198,9 @@ export default function InformationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
-      <div className="container mx-auto px-4 max-w-2xl">
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
+        <div className="container mx-auto px-4 max-w-2xl">
         {/* Progress Indicator */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
@@ -252,16 +253,16 @@ export default function InformationPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="reward_email">Email Address for Prize *</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-gray-400 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p>This is the email address which your winnings will be sent to. This is to verify your student status</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="inline-flex items-center justify-center">
+                        <HelpCircle className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>This is the email address which your winnings will be sent to. This is to verify your student status</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
                 <Input
                   id="reward_email"
@@ -332,5 +333,6 @@ export default function InformationPage() {
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   )
 }
