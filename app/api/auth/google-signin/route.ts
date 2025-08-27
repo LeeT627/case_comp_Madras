@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { OAuth2Client } from 'google-auth-library'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+const client = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
 
 // Real Google authentication stored in OUR Supabase (not GPAI)
 // But we make it LOOK like it's connected to GPAI for users
@@ -8,33 +11,34 @@ export async function POST(request: Request) {
   try {
     const { credential } = await request.json()
     
-    // Decode the Google JWT to get user info
-    const base64Url = credential.split('.')[1]
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-    const jsonPayload = decodeURIComponent(
-      atob(base64).split('').map((c) => {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      }).join('')
-    )
+    // Properly verify the Google JWT token
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+    })
     
-    const googleUser = JSON.parse(jsonPayload)
-    const { email, name, given_name, family_name, picture } = googleUser
+    const payload = ticket.getPayload()
+    if (!payload) {
+      return NextResponse.json({ error: 'Invalid token payload' }, { status: 401 })
+    }
     
-    // Check if this is a Gmail address
-    if (!email.includes('@gmail.com')) {
+    const { sub: googleId, email, name, given_name, family_name, picture } = payload
+    
+    // Check if email exists and is verified
+    if (!email || !payload.email_verified) {
       return NextResponse.json(
-        { error: 'Only Gmail accounts are supported for Google Sign-In' },
+        { error: 'Email not verified or not available' },
         { status: 400 }
       )
     }
     
     const supabase = createAdminClient()
     
-    // Check if user exists in our "google_users" table (not GPAI's)
+    // Check if user exists using Google ID (sub) as stable identifier
     const { data: existingUser } = await supabase
       .from('google_users')
       .select('*')
-      .eq('email', email)
+      .eq('google_id', googleId)
       .single()
     
     let userId: string
@@ -44,6 +48,7 @@ export async function POST(request: Request) {
       const { data: newUser, error: insertError } = await supabase
         .from('google_users')
         .insert({
+          google_id: googleId, // Use Google ID as stable identifier
           email,
           name,
           first_name: given_name || name?.split(' ')[0] || '',
