@@ -41,16 +41,19 @@ export default function SignInPage() {
         })
         
         // Render the Google Sign-In button
-        window.google.accounts.id.renderButton(
-          document.getElementById('google-signin-button'),
-          {
-            type: 'standard',
-            theme: 'outline',
-            size: 'large',
-            text: 'signin_with',
-            width: 384
-          }
-        )
+        const googleButton = document.getElementById('google-signin-button')
+        if (googleButton) {
+          window.google.accounts.id.renderButton(
+            googleButton,
+            {
+              type: 'standard',
+              theme: 'outline',
+              size: 'large',
+              text: 'signin_with',
+              width: 384
+            }
+          )
+        }
       }
     }
     document.body.appendChild(script)
