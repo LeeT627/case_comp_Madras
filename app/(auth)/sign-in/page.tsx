@@ -33,7 +33,7 @@ export default function SignInPage() {
     script.onload = () => {
       if (window.google && window.google.accounts) {
         window.google.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '851936510896-p5cmi1aqgojf9kqtcvq5m8n8jkrv7m6d.apps.googleusercontent.com',
+          client_id: '1041422533141-6b7nc9q5nl4hpgpt48qehh1435flt806.apps.googleusercontent.com',
           callback: handleGoogleCallback,
           auto_select: false
         })
