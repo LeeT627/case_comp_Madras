@@ -28,7 +28,6 @@ export async function POST(request: Request) {
     
     const headersList = await headers()
     const userId = headersList.get('x-user-id')
-    const userEmail = headersList.get('x-user-email')
     
     console.log('Sending verification email - userId:', userId, 'to:', school_email)
     

@@ -6,7 +6,6 @@ export async function GET() {
   try {
     const headersList = await headers()
     const userId = headersList.get('x-user-id')
-    const userEmail = headersList.get('x-user-email')
     
     if (!userId) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
