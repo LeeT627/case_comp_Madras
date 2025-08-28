@@ -123,6 +123,7 @@ export default function VerifySchoolEmailPage() {
 
       if (!res.ok) {
         const error = await res.json()
+        console.error('Verification failed:', error)
         throw new Error(error.error || 'Failed to verify code')
       }
 
