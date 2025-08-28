@@ -213,7 +213,7 @@ export default function VerifySchoolEmailPage() {
               <CardContent className="space-y-4">
                 <div className="text-center mb-4">
                   <p className="text-sm text-gray-600">
-                    We've sent a verification code to:
+                    We&apos;ve sent a verification code to:
                   </p>
                   <p className="font-medium text-gray-900">{email}</p>
                 </div>

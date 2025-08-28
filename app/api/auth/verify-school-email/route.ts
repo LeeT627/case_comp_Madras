@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     const supabase = createAdminClient()
     
     // Create or update user profile with school email
-    const { error: upsertError, data } = await supabase
+    const { error: upsertError } = await supabase
       .from('user_profiles')
       .upsert({
         user_id: String(userId),  // Ensure it's a string
@@ -43,7 +43,6 @@ export async function POST(request: Request) {
       }, {
         onConflict: 'user_id,auth_method'
       })
-      .select()
     
     if (upsertError) {
       console.error('Failed to update user profile:', upsertError)
