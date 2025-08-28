@@ -106,9 +106,6 @@ export default function VerifySchoolEmailPage() {
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Verify Your Student Status</CardTitle>
-            <CardDescription>
-              Please provide your school email address to continue. This is required to verify that you are currently enrolled in an educational institution.
-            </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
