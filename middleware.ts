@@ -81,5 +81,7 @@ export const config = {
     '/api/uploads/:path*',
     '/api/auth/check-school-email',
     '/api/auth/verify-school-email',
+    '/api/auth/send-verification-email',
+    '/api/auth/verify-email-code',
   ],
 }
