@@ -18,7 +18,7 @@ export async function GET() {
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('school_email, school_email_verified')
-      .eq('user_id', userId)
+      .eq('user_id', String(userId))  // Ensure it's a string
       .eq('auth_method', 'gpai')
       .single()
     

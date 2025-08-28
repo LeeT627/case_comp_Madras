@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
       
       // Add user info to request headers for API routes
       const requestHeaders = new Headers(request.headers)
-      requestHeaders.set('x-user-id', userData.id)
+      requestHeaders.set('x-user-id', String(userData.id))
       requestHeaders.set('x-user-email', userData.email)
       
       // If accessing dashboard, check if school email is verified
@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
         const { data: profile } = await supabase
           .from('user_profiles')
           .select('school_email_verified')
-          .eq('user_id', userData.id)
+          .eq('user_id', String(userData.id))  // Ensure it's a string
           .eq('auth_method', 'gpai')
           .single()
         
