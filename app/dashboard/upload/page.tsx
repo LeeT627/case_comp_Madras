@@ -57,7 +57,7 @@ export default function UploadPage() {
         location: info.data.location,
         college: info.data.college === 'Other' ? info.data.college_other : info.data.college,
         email: gpaiUser.email || '',
-        email_reward: info.data.reward_email || gpaiUser.email || ''
+        email_reward: gpaiUser.email || ''
       })
 
       // 업로드 파일 확인

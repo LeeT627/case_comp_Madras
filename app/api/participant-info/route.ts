@@ -15,7 +15,7 @@ export async function GET() {
     const supabase = createAdminClient()
     const { data, error } = await supabase
       .from('participant_info')
-      .select('first_name, last_name, location, college, college_other, reward_email, created_at')
+      .select('first_name, last_name, location, college, college_other, created_at')
       .eq('user_id', userId)
       .single()
 
@@ -45,16 +45,15 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
     const body = await request.json()
-    const { first_name, last_name, reward_email, location, college, college_other } = body as Record<string, unknown>
+    const { first_name, last_name, location, college, college_other } = body as Record<string, unknown>
 
-    if (!first_name || !last_name || !reward_email || !location || !college) {
+    if (!first_name || !last_name || !location || !college) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
     const payload = {
       user_id: userId,
       first_name: String(first_name),
       last_name: String(last_name),
-      reward_email: String(reward_email),
       location: String(location),
       college: String(college),
       college_other: college_other ? String(college_other) : null,
