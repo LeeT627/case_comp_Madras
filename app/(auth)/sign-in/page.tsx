@@ -24,8 +24,8 @@ export default function SignInPage() {
       })
       
       if (res.ok) {
-        // Already authenticated, redirect to dashboard
-        router.push('/dashboard')
+        // Already authenticated, redirect to school email verification
+        router.push('/verify-school-email')
       }
     } catch {
       // Not authenticated, stay on sign-in
@@ -33,8 +33,8 @@ export default function SignInPage() {
   }
 
   const handleSignIn = () => {
-    // Redirect to main GPAI login with return URL
-    const returnUrl = encodeURIComponent('https://case-competition.gpai.app/dashboard')
+    // Redirect to main GPAI login with return URL to school email verification
+    const returnUrl = encodeURIComponent('https://case-competition.gpai.app/verify-school-email')
     window.location.href = `https://gpai.app/login?returnUrl=${returnUrl}`
   }
 

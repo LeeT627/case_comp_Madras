@@ -38,6 +38,26 @@ export async function middleware(request: NextRequest) {
       requestHeaders.set('x-user-id', userData.id)
       requestHeaders.set('x-user-email', userData.email)
       
+      // If accessing dashboard, check if school email is verified
+      if (pathname.startsWith('/dashboard')) {
+        // Make a request to our API to check school email verification
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const supabase = createAdminClient()
+        
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('school_email_verified')
+          .eq('user_id', userData.id)
+          .eq('auth_method', 'gpai')
+          .single()
+        
+        if (!profile || !profile.school_email_verified) {
+          // Redirect to school email verification
+          const url = new URL('/verify-school-email', request.url)
+          return NextResponse.redirect(url)
+        }
+      }
+      
       return NextResponse.next({
         request: {
           headers: requestHeaders,
@@ -56,7 +76,10 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/verify-school-email',
     '/api/participant-info',
     '/api/uploads/:path*',
+    '/api/auth/check-school-email',
+    '/api/auth/verify-school-email',
   ],
 }
