@@ -23,8 +23,10 @@ export default function Home() {
       })
       
       if (res.ok) {
-        router.push('/dashboard')
+        // User is authenticated with GPAI, now check school email verification
+        router.push('/verify-school-email')
       } else {
+        // Not authenticated, go to sign-in
         router.push('/sign-in')
       }
     } catch {
