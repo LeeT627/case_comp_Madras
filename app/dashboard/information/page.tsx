@@ -37,7 +37,7 @@ export default function InformationPage() {
   const checkLocationAndLoadData = async () => {
     try {
       // gpai 세션 확인
-      const gpaiUser = await fetchSessionUser()
+      await fetchSessionUser()
 
       // 위치 선택 여부 확인
       const selectedLocation = localStorage.getItem('selected_location')
