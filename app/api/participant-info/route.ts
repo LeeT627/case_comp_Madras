@@ -64,11 +64,18 @@ export async function POST(request: NextRequest) {
       .upsert(payload, { onConflict: 'user_id' })
     
     if (error) {
-      console.error('[participant-info POST] Error:', error)
-    }
-
-    if (error) {
-      return NextResponse.json({ error: 'Failed to save participant info' }, { status: 500 })
+      console.error('[participant-info POST] Supabase Error:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        payload
+      })
+      return NextResponse.json({ 
+        error: `Database error: ${error.message}`,
+        code: error.code,
+        details: error.details 
+      }, { status: 500 })
     }
 
     return NextResponse.json({ ok: true })
