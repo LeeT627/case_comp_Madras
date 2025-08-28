@@ -132,10 +132,10 @@ export default function VerifySchoolEmailPage() {
         description: 'School email verified successfully.'
       })
       
-      // Redirect to dashboard
+      // Redirect to dashboard with hard refresh to update session
       setTimeout(() => {
-        router.push('/dashboard')
-      }, 500)
+        window.location.href = '/dashboard'
+      }, 1000)
       
     } catch (error) {
       toast({
