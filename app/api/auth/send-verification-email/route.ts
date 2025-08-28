@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     // Send verification email using Resend
     try {
       const { data, error: emailError } = await resend.emails.send({
-        from: 'GPAI Case Competition <onboarding@resend.dev>',
+        from: 'GPAI Case Competition <no-reply@mail.gpai.app>',
         to: school_email,
         subject: 'Verify Your School Email - GPAI Case Competition',
         html: `
