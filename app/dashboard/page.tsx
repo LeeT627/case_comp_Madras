@@ -109,7 +109,7 @@ export default function DashboardPage() {
             <CardContent>
               <a 
                 href="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/case-competition-prompt.pdf" 
-                download="GPAI Case Competition (TeamTuring) - Delhi.pdf"
+                download="GPAI&BNC IIT Delhi Case Competition Prompt.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
