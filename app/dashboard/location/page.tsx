@@ -91,13 +91,10 @@ export default function LocationPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Select Your Location</CardTitle>
-            <CardDescription>
-              Choose your competition location.
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-3">
-              <Label htmlFor="location">Competition Location (or choose the closest one) *</Label>
+              <Label htmlFor="location">Your Location (or choose the closest one) *</Label>
               <select
                 id="location"
                 value={selectedLocation}

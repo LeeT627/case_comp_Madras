@@ -31,6 +31,7 @@ export const ROUTES = {
   DASHBOARD_LOCATION: '/dashboard/location',
   DASHBOARD_INFORMATION: '/dashboard/information',
   DASHBOARD_UPLOAD: '/dashboard/upload',
+  DASHBOARD_SUBMISSION_COMPLETE: '/dashboard/submission-complete',
   RESET_PASSWORD: '/reset-password'
 }
 

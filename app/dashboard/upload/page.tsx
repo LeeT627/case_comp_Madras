@@ -177,10 +177,10 @@ export default function UploadPage() {
       const fileInput = document.getElementById('file') as HTMLInputElement
       if (fileInput) fileInput.value = ''
 
-      // Redirect to dashboard after successful upload
+      // Redirect to submission complete page after successful upload
       setTimeout(() => {
-        router.push(ROUTES.DASHBOARD)
-      }, 2000)
+        router.push(ROUTES.DASHBOARD_SUBMISSION_COMPLETE)
+      }, 1500)
     } catch (error) {
       toast({
         title: 'Upload failed',
