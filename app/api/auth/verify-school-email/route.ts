@@ -21,8 +21,10 @@ export async function POST(request: Request) {
     const userId = headersList.get('x-user-id')
     const userEmail = headersList.get('x-user-email')
     
+    console.log('Verification attempt - userId:', userId, 'userEmail:', userEmail)
+    
     if (!userId) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+      return NextResponse.json({ error: 'Not authenticated - no user ID in headers' }, { status: 401 })
     }
     
     const supabase = createAdminClient()
@@ -44,7 +46,11 @@ export async function POST(request: Request) {
     
     if (upsertError) {
       console.error('Failed to update user profile:', upsertError)
-      return NextResponse.json({ error: 'Failed to verify email' }, { status: 500 })
+      // Return more detailed error for debugging
+      return NextResponse.json({ 
+        error: 'Failed to verify email',
+        details: upsertError.message || 'Database error'
+      }, { status: 500 })
     }
     
     return NextResponse.json({ 
