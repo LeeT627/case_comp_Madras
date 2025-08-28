@@ -108,7 +108,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <a 
-                href="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/case-competition-prompt.pdf" 
+                href="https://aggfpcxaxdyxiriqruos.supabase.co/storage/v1/object/public/public-files/GPAI%26BNC%20IIT%20Delhi%20Case%20Competition%20Prompt.pdf" 
                 download="GPAI&BNC IIT Delhi Case Competition Prompt.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
