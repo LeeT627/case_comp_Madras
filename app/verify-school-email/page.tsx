@@ -101,7 +101,7 @@ export default function VerifySchoolEmailPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">{APP_NAME}</h1>
-          <p className="text-lg text-gray-600 mt-1">Student Verification Required</p>
+          <p className="text-lg text-gray-600 mt-1">IIT Delhi BNC - ₹120,000</p>
         </div>
         <Card>
           <CardHeader className="space-y-1">
