@@ -242,15 +242,18 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <p className="font-semibold text-gray-800 mb-2">Winnings: ₹120,000</p>
+                <p className="font-semibold text-gray-800 mb-2">Total Prize Pool: ₹120,000</p>
                 <div className="text-sm text-gray-700 space-y-1">
-                  <p>1st: ₹30,000</p>
-                  <p>2nd: ₹12,000</p>
-                  <p>3rd: ₹7,000</p>
-                  <p>4–10: ₹2,000 each → ₹14,000</p>
-                  <p>11–50: ₹300 each → ₹12,000</p>
-                  <p>51–500: ₹100 each → ₹45,000</p>
+                  <p>1st: ₹40,000</p>
+                  <p>2nd: ₹20,000</p>
+                  <p>3rd: ₹10,000</p>
+                  <p>4-5th: ₹5,000 each – total of ₹10,000</p>
+                  <p>6-10th: ₹2,000 each – total of ₹10,000</p>
+                  <p>11-110th: ₹300 each – total of ₹30,000</p>
                 </div>
+                <p className="text-sm text-gray-700 mt-3 font-medium">
+                  Participants who place in the top 10 will be given guaranteed internship interview opportunities.
+                </p>
               </div>
               <p className="text-sm text-gray-600 mb-4">
                 Take me back to: <a href="https://www.gpai.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">www.gpai.app</a>
