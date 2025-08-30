@@ -19,32 +19,42 @@ export async function POST(request: Request) {
     
     const supabase = createAdminClient()
     
-    // Check if code is valid and not expired
-    const { data: verificationData, error: fetchError } = await supabase
-      .from('email_verification_codes')
-      .select('*')
-      .eq('user_id', String(userId))
-      .eq('email', school_email)
-      .eq('code', code)
-      .eq('used', false)
-      .gte('expires_at', new Date().toISOString())
-      .single()
+    // BYPASS FOR LOCAL TESTING ONLY
+    const BYPASS_CODE = '999999'
+    const isLocalEnv = process.env.NODE_ENV === 'development'
     
-    if (fetchError || !verificationData) {
-      console.error('Invalid or expired code:', fetchError)
-      return NextResponse.json({ 
-        error: 'Invalid or expired verification code' 
-      }, { status: 400 })
-    }
-    
-    // Mark code as used
-    const { error: updateError } = await supabase
-      .from('email_verification_codes')
-      .update({ used: true })
-      .eq('id', verificationData.id)
-    
-    if (updateError) {
-      console.error('Failed to mark code as used:', updateError)
+    if (isLocalEnv && code === BYPASS_CODE) {
+      console.log('[DEV MODE] Using bypass code for verification')
+      // Skip verification and proceed directly
+    } else {
+      // Normal verification flow
+      // Check if code is valid and not expired
+      const { data: verificationData, error: fetchError } = await supabase
+        .from('email_verification_codes')
+        .select('*')
+        .eq('user_id', String(userId))
+        .eq('email', school_email)
+        .eq('code', code)
+        .eq('used', false)
+        .gte('expires_at', new Date().toISOString())
+        .single()
+      
+      if (fetchError || !verificationData) {
+        console.error('Invalid or expired code:', fetchError)
+        return NextResponse.json({ 
+          error: 'Invalid or expired verification code' 
+        }, { status: 400 })
+      }
+      
+      // Mark code as used
+      const { error: updateError } = await supabase
+        .from('email_verification_codes')
+        .update({ used: true })
+        .eq('id', verificationData.id)
+      
+      if (updateError) {
+        console.error('Failed to mark code as used:', updateError)
+      }
     }
     
     // Update user profile with verified email

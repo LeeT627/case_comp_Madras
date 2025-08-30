@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { validateEmail } from '@/lib/email-validation'
+import { isEmailWhitelisted } from '@/lib/whitelist-emails'
 import { Resend } from 'resend'
 
 // Initialize Resend with API key
@@ -37,7 +38,41 @@ export async function POST(request: Request) {
     
     const supabase = createAdminClient()
     
-    // Generate verification code
+    // Check if email is whitelisted - if so, auto-verify without sending email
+    if (isEmailWhitelisted(school_email)) {
+      console.log('[WHITELIST] Auto-verifying whitelisted email:', school_email)
+      
+      // Directly update/create user profile as verified
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .upsert({
+          user_id: String(userId),
+          auth_method: 'gpai',
+          school_email,
+          school_email_verified: true,
+          school_email_verified_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,auth_method'
+        })
+      
+      if (profileError) {
+        console.error('Failed to auto-verify whitelisted email:', profileError)
+        return NextResponse.json({ 
+          error: 'Failed to verify whitelisted email',
+          details: profileError.message
+        }, { status: 500 })
+      }
+      
+      return NextResponse.json({ 
+        success: true,
+        message: 'Email automatically verified (whitelisted)',
+        whitelisted: true
+      })
+    }
+    
+    // Generate verification code for non-whitelisted emails
     const code = generateVerificationCode()
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes from now
     
@@ -58,6 +93,16 @@ export async function POST(request: Request) {
         error: 'Failed to generate verification code',
         details: insertError.message
       }, { status: 500 })
+    }
+    
+    // BYPASS FOR LOCAL TESTING - Show code in console
+    const isLocalEnv = process.env.NODE_ENV === 'development'
+    if (isLocalEnv) {
+      console.log('================================================')
+      console.log('[DEV MODE] Verification code for', school_email)
+      console.log('CODE:', code)
+      console.log('Or use bypass code: 999999')
+      console.log('================================================')
     }
     
     // Send verification email using Resend

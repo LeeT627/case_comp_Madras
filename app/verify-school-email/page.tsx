@@ -78,6 +78,22 @@ export default function VerifySchoolEmailPage() {
         throw new Error(error.error || 'Failed to send verification email')
       }
 
+      const data = await res.json()
+      
+      // Check if email was whitelisted and auto-verified
+      if (data.whitelisted) {
+        toast({ 
+          title: 'Email Verified!', 
+          description: 'Your email has been automatically verified.'
+        })
+        
+        // Redirect to dashboard after auto-verification
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 1500)
+        return
+      }
+
       toast({ 
         title: 'Verification Email Sent!', 
         description: 'Please check your inbox for the verification code.'
