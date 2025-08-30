@@ -36,7 +36,27 @@ export async function POST(request: Request) {
     if (isEmailWhitelisted(school_email)) {
       console.log('[WHITELIST] Auto-verifying whitelisted email:', school_email)
       
-      // Directly update/create user profile as verified
+      // Get user's GPAI email from headers (if available)
+      const userEmail = headersList.get('x-user-email')
+      
+      // Save to whitelisted_emails table
+      const { error: whitelistError } = await supabase
+        .from('whitelisted_emails')
+        .upsert({
+          user_id: String(userId),
+          whitelisted_email: school_email,
+          gpai_email: userEmail || null,
+          verified_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        })
+      
+      if (whitelistError) {
+        console.error('Failed to save whitelisted email record:', whitelistError)
+      }
+      
+      // Also update/create user profile as verified (keep existing flow)
       const { error: profileError } = await supabase
         .from('user_profiles')
         .upsert({
