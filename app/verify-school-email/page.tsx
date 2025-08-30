@@ -55,7 +55,10 @@ export default function VerifySchoolEmailPage() {
     if (e) e.preventDefault()
     
     // Skip validation if email is whitelisted
-    if (!isEmailWhitelisted(email)) {
+    const isWhitelisted = isEmailWhitelisted(email)
+    console.log('[DEBUG] Email:', email, 'Whitelisted:', isWhitelisted)
+    
+    if (!isWhitelisted) {
       // Only validate if NOT whitelisted
       const validation = validateEmail(email)
       if (!validation.isValid) {
