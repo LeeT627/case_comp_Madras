@@ -21,12 +21,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'School email is required' }, { status: 400 })
     }
     
-    // Validate the email
-    const validation = validateEmail(school_email)
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 })
-    }
-    
     const headersList = await headers()
     const userId = headersList.get('x-user-id')
     
@@ -38,7 +32,7 @@ export async function POST(request: Request) {
     
     const supabase = createAdminClient()
     
-    // Check if email is whitelisted - if so, auto-verify without sending email
+    // Check if email is whitelisted BEFORE validation - if so, auto-verify without sending email
     if (isEmailWhitelisted(school_email)) {
       console.log('[WHITELIST] Auto-verifying whitelisted email:', school_email)
       
@@ -70,6 +64,12 @@ export async function POST(request: Request) {
         message: 'Email automatically verified (whitelisted)',
         whitelisted: true
       })
+    }
+    
+    // Validate the email ONLY if not whitelisted
+    const validation = validateEmail(school_email)
+    if (!validation.isValid) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
     }
     
     // Generate verification code for non-whitelisted emails
