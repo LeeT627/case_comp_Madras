@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { validateEmail } from '@/lib/email-validation'
+import { isEmailWhitelisted } from '@/lib/whitelist-emails'
 import { APP_NAME } from '@/lib/constants'
 
 export default function VerifySchoolEmailPage() {
@@ -53,15 +54,18 @@ export default function VerifySchoolEmailPage() {
   const handleSendVerification = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     
-    // Validate email
-    const validation = validateEmail(email)
-    if (!validation.isValid) {
-      toast({
-        title: 'Invalid Email',
-        description: validation.error,
-        variant: 'destructive',
-      })
-      return
+    // Skip validation if email is whitelisted
+    if (!isEmailWhitelisted(email)) {
+      // Only validate if NOT whitelisted
+      const validation = validateEmail(email)
+      if (!validation.isValid) {
+        toast({
+          title: 'Invalid Email',
+          description: validation.error,
+          variant: 'destructive',
+        })
+        return
+      }
     }
 
     setLoading(true)
