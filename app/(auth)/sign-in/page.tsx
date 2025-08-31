@@ -35,11 +35,14 @@ export default function SignInPage() {
   const handleSignIn = async () => {
     // Track the sign-in click
     try {
-      await fetch('/api/track-signin', {
+      console.log('Tracking sign-in click...')
+      const response = await fetch('/api/track-signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
-    } catch {
+      console.log('Tracking response:', response.ok)
+    } catch (error) {
+      console.error('Tracking error:', error)
       // Silent fail - don't block sign-in if tracking fails
     }
     
