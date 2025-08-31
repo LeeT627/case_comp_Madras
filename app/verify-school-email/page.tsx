@@ -82,6 +82,10 @@ export default function VerifySchoolEmailPage() {
 
       if (!res.ok) {
         const error = await res.json()
+        // Special handling for already-used whitelist emails
+        if (res.status === 409) {
+          throw new Error('This email has already been claimed by another user.')
+        }
         throw new Error(error.error || 'Failed to send verification email')
       }
 

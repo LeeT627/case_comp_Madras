@@ -32,14 +32,36 @@ export async function POST(request: Request) {
     
     const supabase = createAdminClient()
     
-    // Check if email is whitelisted BEFORE validation - if so, auto-verify without sending email
+    // Check if email is whitelisted BEFORE validation
     if (isEmailWhitelisted(school_email)) {
-      console.log('[WHITELIST] Auto-verifying whitelisted email:', school_email)
+      console.log('[WHITELIST] Attempting to auto-verify whitelisted email:', school_email);
+
+      // Check if the whitelisted email has already been claimed
+      const { data: existingClaim, error: claimCheckError } = await supabase
+        .from('whitelisted_emails')
+        .select('user_id')
+        .eq('whitelisted_email', school_email)
+        .single();
+
+      if (claimCheckError && claimCheckError.code !== 'PGRST116') { // Ignore 'not found' error
+        console.error('Error checking for existing whitelisted email claim:', claimCheckError);
+        return NextResponse.json({ error: 'Database error while checking whitelist.' }, { status: 500 });
+      }
+
+      // If the email is claimed by a DIFFERENT user, block it
+      if (existingClaim && existingClaim.user_id !== String(userId)) {
+        console.warn(`[WHITELIST] Blocked attempt: Email ${school_email} already claimed by user ${existingClaim.user_id}`);
+        return NextResponse.json({ error: 'This whitelisted email has already been used by another account.' }, { status: 409 }); // 409 Conflict
+      }
+
+      // --- If we are here, the email is either unclaimed, or claimed by the current user ---
+
+      console.log('[WHITELIST] Email is available for verification by user:', userId);
       
       // Get user's GPAI email from headers (if available)
-      const userEmail = headersList.get('x-user-email')
+      const userEmail = headersList.get('x-user-email');
       
-      // Save to whitelisted_emails table
+      // Save to whitelisted_emails table. The new UNIQUE constraint will provide a final layer of protection.
       const { error: whitelistError } = await supabase
         .from('whitelisted_emails')
         .upsert({
@@ -47,16 +69,20 @@ export async function POST(request: Request) {
           whitelisted_email: school_email,
           gpai_email: userEmail || null,
           verified_at: new Date().toISOString(),
-          created_at: new Date().toISOString()
         }, {
-          onConflict: 'user_id'
-        })
+          onConflict: 'whitelisted_email', // Use the new unique constraint for conflict resolution
+        });
       
       if (whitelistError) {
-        console.error('Failed to save whitelisted email record:', whitelistError)
+        console.error('Failed to save whitelisted email record:', whitelistError);
+        // Check for unique constraint violation error
+        if (whitelistError.code === '23505') { // Postgres unique violation
+          return NextResponse.json({ error: 'This whitelisted email has already been used.' }, { status: 409 });
+        }
+        return NextResponse.json({ error: 'Failed to claim whitelisted email.', details: whitelistError.message }, { status: 500 });
       }
       
-      // Also update/create user profile as verified (keep existing flow)
+      // Also update/create user profile as verified
       const { error: profileError } = await supabase
         .from('user_profiles')
         .upsert({
@@ -65,25 +91,23 @@ export async function POST(request: Request) {
           school_email,
           school_email_verified: true,
           school_email_verified_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
         }, {
-          onConflict: 'user_id,auth_method'
-        })
+          onConflict: 'user_id,auth_method',
+        });
       
       if (profileError) {
-        console.error('Failed to auto-verify whitelisted email:', profileError)
+        console.error('Failed to auto-verify user profile for whitelisted email:', profileError);
         return NextResponse.json({ 
-          error: 'Failed to verify whitelisted email',
+          error: 'Failed to verify user profile',
           details: profileError.message
-        }, { status: 500 })
+        }, { status: 500 });
       }
       
       return NextResponse.json({ 
         success: true,
         message: 'Email automatically verified (whitelisted)',
         whitelisted: true
-      })
+      });
     }
     
     // Validate the email ONLY if not whitelisted
