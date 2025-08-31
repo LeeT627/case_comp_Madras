@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const referer = headersList.get('referer') || null
     const xForwardedFor = headersList.get('x-forwarded-for')
     const xRealIp = headersList.get('x-real-ip')
-    const ip = xForwardedFor || xRealIp || request.ip || null
+    const ip = xForwardedFor || xRealIp || null
     
     // Get session ID from cookie if available
     const sessionId = request.cookies.get('sessionId')?.value || null
