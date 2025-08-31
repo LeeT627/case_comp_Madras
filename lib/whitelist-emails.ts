@@ -4,12 +4,10 @@
 
 export const WHITELISTED_EMAILS = [
   // Add emails here in lowercase
-  'test@example.com',
-  'admin@university.edu',
-  'sukhun@test.edu',
-  'sukhun0627@gmail.com',
-  'sukhunlee0627@gmail.com',
   'shashwatgwork1@gmail.com',
+  'gargpratham71@gmail.com',
+  'shishodiavishaka@gmail.com',
+  'ss9839538505@gmail.com'
   // Add more emails as needed
 ]
 
