@@ -32,7 +32,17 @@ export default function SignInPage() {
     }
   }
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
+    // Track the sign-in click
+    try {
+      await fetch('/api/track-signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+    } catch {
+      // Silent fail - don't block sign-in if tracking fails
+    }
+    
     // Redirect to main GPAI login with return URL to school email verification
     const returnUrl = encodeURIComponent('https://case-competition.gpai.app/verify-school-email')
     window.location.href = `https://gpai.app/login?returnUrl=${returnUrl}`
