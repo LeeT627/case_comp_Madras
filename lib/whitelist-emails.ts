@@ -7,7 +7,8 @@ export const WHITELISTED_EMAILS = [
   'shashwatgwork1@gmail.com',
   'gargpratham71@gmail.com',
   'shishodiavishaka@gmail.com',
-  'ss9839538505@gmail.com'
+  'ss9839538505@gmail.com',
+  'shashwatcls10@gmail.com',
   // Add more emails as needed
 ]
 
