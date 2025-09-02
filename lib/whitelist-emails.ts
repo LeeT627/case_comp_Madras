@@ -21,7 +21,7 @@ export const WHITELISTED_EMAILS = [
   'unnatihirwani@gmail.com',
   'ashitoshjadhav7089@gmail.com',
   'nathanlinus.cerejo029@nmims.in'
-  'bpalak7027@gmail',
+  'bpalak7027@gmail.com',
   // Add more emails as needed
 ]
 
