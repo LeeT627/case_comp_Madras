@@ -4,12 +4,26 @@ const GPAI_API_URL = 'https://api-prod.gpai.app'
 
 export async function GET(request: NextRequest) {
   try {
-    const sessionId = request.nextUrl.searchParams.get('sessionId')
+    // Log all parameters to see what GPAI actually sends
+    const searchParams = request.nextUrl.searchParams
+    const allParams: Record<string, string> = {}
+    searchParams.forEach((value, key) => {
+      allParams[key] = value
+    })
+    console.log('[AUTH CALLBACK] Received parameters:', allParams)
+    console.log('[AUTH CALLBACK] Full URL:', request.url)
+    
+    // Try different possible parameter names
+    const sessionId = searchParams.get('sessionId') || 
+                     searchParams.get('token') || 
+                     searchParams.get('auth_token') ||
+                     searchParams.get('access_token') ||
+                     searchParams.get('code')
 
     if (!sessionId) {
       // No session ID provided, redirect to sign-in with an error
       const signInUrl = new URL('/sign-in', request.nextUrl.origin)
-      signInUrl.searchParams.set('error', 'Authentication failed. No session ID provided.')
+      signInUrl.searchParams.set('error', `Authentication failed. No session ID provided. Params received: ${JSON.stringify(allParams)}`)
       return NextResponse.redirect(signInUrl)
     }
 
