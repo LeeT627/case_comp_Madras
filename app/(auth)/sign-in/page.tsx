@@ -47,7 +47,7 @@ export default function SignInPage() {
     }
     
     // Redirect to main GPAI login with return URL to school email verification
-    const returnUrl = encodeURIComponent('https://case-competition.gpai.app/verify-school-email')
+    const returnUrl = encodeURIComponent(`${window.location.origin}/verify-school-email`)
     window.location.href = `https://gpai.app/login?returnUrl=${returnUrl}`
   }
 
