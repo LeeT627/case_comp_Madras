@@ -37,8 +37,9 @@ export default function SignInPage() {
       const data = await res.json()
       
       if (data.authenticated) {
-        // Already authenticated, redirect to school email verification
-        router.push('/verify-school-email')
+        // Already authenticated, try to go to dashboard
+        // The middleware will redirect to email verification if needed
+        router.push('/dashboard')
       }
     } catch {
       // Not authenticated, stay on sign-in
@@ -77,9 +78,9 @@ export default function SignInPage() {
             clearInterval(pollingInterval.current)
           }
           
-          // Redirect to email verification
+          // Redirect to dashboard (middleware will handle email verification check)
           setTimeout(() => {
-            router.push('/verify-school-email')
+            router.push('/dashboard')
           }, 1000)
         } else if (pollCount >= maxPolls) {
           // Timeout - stop polling

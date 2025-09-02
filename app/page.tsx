@@ -23,8 +23,9 @@ export default function Home() {
       })
       
       if (res.ok) {
-        // User is authenticated with GPAI, now check school email verification
-        router.push('/verify-school-email')
+        // User is authenticated with GPAI, redirect to dashboard
+        // Middleware will handle school email verification check
+        router.push('/dashboard')
       } else {
         // Not authenticated, go to sign-in
         router.push('/sign-in')
