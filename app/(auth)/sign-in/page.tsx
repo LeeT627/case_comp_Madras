@@ -52,7 +52,7 @@ export default function SignInPage() {
             <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
             <CardDescription className="text-red-600 font-medium">
               Please sign in with your gpai.app credentials. If you do not have a gpai.app account, please sign up on gpai.app first.
-            </Card-Description>
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 py-8">
             <Button 
