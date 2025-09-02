@@ -1,128 +1,44 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { APP_NAME, APP_AUTHOR } from '@/lib/constants'
+import { useEffect } from 'react'
 
 export default function SignInPage() {
   const router = useRouter()
-  const [isPolling, setIsPolling] = useState(false)
-  const [pollMessage, setPollMessage] = useState('')
-  const pollingInterval = useRef<NodeJS.Timeout | null>(null)
-  const authWindow = useRef<Window | null>(null)
-  
-  useEffect(() => {
-    // Check if already authenticated
-    checkAuth()
-    
-    // Cleanup polling on unmount
-    return () => {
-      if (pollingInterval.current) {
-        clearInterval(pollingInterval.current)
-      }
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  
-  const checkAuth = async () => {
-    try {
-      const res = await fetch('/api/auth/check-gpai-session', {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      
-      const data = await res.json()
-      
-      if (data.authenticated) {
-        // Already authenticated, try to go to dashboard
-        // The middleware will redirect to email verification if needed
-        router.push('/dashboard')
-      }
-    } catch {
-      // Not authenticated, stay on sign-in
-    }
-  }
 
-  const startPolling = () => {
-    let pollCount = 0
-    const maxPolls = 60 // Poll for max 3 minutes (60 * 3 seconds)
-    
-    pollingInterval.current = setInterval(async () => {
-      pollCount++
-      
-      try {
-        const res = await fetch('/api/auth/check-gpai-session', {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-        
-        const data = await res.json()
-        
-        if (data.authenticated) {
-          // Authentication successful!
-          setIsPolling(false)
-          setPollMessage('Authentication successful! Redirecting...')
-          
-          // Try to close the auth window
-          if (authWindow.current && !authWindow.current.closed) {
-            authWindow.current.close()
-          }
-          
-          // Clear the interval
-          if (pollingInterval.current) {
-            clearInterval(pollingInterval.current)
-          }
-          
-          // Redirect to dashboard (middleware will handle email verification check)
-          setTimeout(() => {
-            router.push('/dashboard')
-          }, 1000)
-        } else if (pollCount >= maxPolls) {
-          // Timeout - stop polling
-          setIsPolling(false)
-          setPollMessage('Authentication timeout. Please try again.')
-          if (pollingInterval.current) {
-            clearInterval(pollingInterval.current)
-          }
+  // Check if user is already authenticated via middleware
+  useEffect(() => {
+    // Try to fetch dashboard - if successful, user is authenticated
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(res => {
+        if (res.ok) {
+          router.push('/dashboard')
         }
-      } catch (error) {
-        console.error('Polling error:', error)
-      }
-    }, 3000) // Poll every 3 seconds
-  }
+      })
+      .catch(() => {
+        // Not authenticated, stay on sign-in
+      })
+  }, [router])
 
   const handleSignIn = async () => {
     // Track the sign-in click
     try {
-      console.log('Tracking sign-in click...')
-      const response = await fetch('/api/track-signin', {
+      await fetch('/api/track-signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
-      console.log('Tracking response:', response.ok)
     } catch (error) {
       console.error('Tracking error:', error)
       // Silent fail - don't block sign-in if tracking fails
     }
     
-    // Open GPAI login in a new tab
-    const returnUrl = encodeURIComponent(`${window.location.origin}/verify-school-email`)
-    authWindow.current = window.open(
-      `https://gpai.app/login?returnUrl=${returnUrl}`,
-      '_blank'
-    )
-    
-    // Start polling for authentication
-    setIsPolling(true)
-    setPollMessage('Please complete sign-in in the new tab...')
-    startPolling()
+    // Redirect to GPAI login
+    const returnUrl = encodeURIComponent(`${window.location.origin}/auth/callback`)
+    window.location.href = `https://gpai.app/login?returnUrl=${returnUrl}`
   }
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
@@ -136,34 +52,16 @@ export default function SignInPage() {
             <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
             <CardDescription className="text-red-600 font-medium">
               Please sign in with your gpai.app credentials. If you do not have a gpai.app account, please sign up on gpai.app first.
-            </CardDescription>
+            </Card-Description>
           </CardHeader>
           <CardContent className="space-y-6 py-8">
             <Button 
               onClick={handleSignIn} 
               className="w-full"
               size="lg"
-              disabled={isPolling}
             >
-              {isPolling ? 'Waiting for authentication...' : 'Sign in with GPAI Account'}
+              Sign in with GPAI Account
             </Button>
-            
-            {pollMessage && (
-              <div className={`text-sm text-center p-3 rounded-lg ${
-                pollMessage.includes('successful') 
-                  ? 'bg-green-50 text-green-700' 
-                  : pollMessage.includes('timeout') 
-                    ? 'bg-red-50 text-red-700'
-                    : 'bg-blue-50 text-blue-700'
-              }`}>
-                {pollMessage}
-                {isPolling && (
-                  <div className="mt-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mx-auto"></div>
-                  </div>
-                )}
-              </div>
-            )}
             
             <div className="text-sm text-center text-muted-foreground">
               Don&apos;t have an account? 
