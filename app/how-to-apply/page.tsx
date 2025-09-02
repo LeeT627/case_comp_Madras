@@ -61,7 +61,7 @@ export default function HowToApplyPage() {
               </ol>
               
               <div className="mt-4">
-                <p className="text-gray-700 font-medium">Total Winnings: ₹120,000</p>
+                <p className="text-gray-700 font-medium">Total Winnings: ₹100,000</p>
               </div>
 
               <div className="pt-4 space-y-3">

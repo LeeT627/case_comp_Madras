@@ -242,7 +242,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <p className="font-semibold text-gray-800 mb-2">Total Prize Pool: ₹120,000</p>
+                <p className="font-semibold text-gray-800 mb-2">Total Prize Pool: ₹100,000</p>
                 <div className="text-sm text-gray-700 space-y-1">
                   <p>1st: ₹40,000</p>
                   <p>2nd: ₹20,000</p>

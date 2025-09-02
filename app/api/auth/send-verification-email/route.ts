@@ -168,7 +168,7 @@ export async function POST(request: Request) {
                 <h2 style="color: #4b5563; margin-bottom: 20px;">Verify Your School Email</h2>
                 
                 <p style="color: #6b7280; line-height: 1.6; margin-bottom: 20px;">
-                  Thank you for registering for the GPAI Case Competition at IIT Delhi BNC. 
+                  Thank you for registering for the GPAI Case Competition at IIT Madras. 
                   Please use the verification code below to confirm your school email address:
                 </p>
                 
@@ -184,8 +184,8 @@ export async function POST(request: Request) {
                 
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                   <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-                    Prize Pool: ₹120,000<br>
-                    Location: IIT Delhi BNC
+                    Prize Pool: ₹100,000<br>
+                    Location: IIT Madras
                   </p>
                 </div>
                 
