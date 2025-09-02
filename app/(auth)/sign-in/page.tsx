@@ -1,28 +1,10 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { APP_NAME, APP_AUTHOR } from '@/lib/constants'
-import { useEffect } from 'react'
 
 export default function SignInPage() {
-  const router = useRouter()
-
-  // Check if user is already authenticated via middleware
-  useEffect(() => {
-    // Try to fetch dashboard - if successful, user is authenticated
-    fetch('/api/auth/me', { credentials: 'include' })
-      .then(res => {
-        if (res.ok) {
-          router.push('/dashboard')
-        }
-      })
-      .catch(() => {
-        // Not authenticated, stay on sign-in
-      })
-  }, [router])
-
   const handleSignIn = async () => {
     // Track the sign-in click
     try {
@@ -32,12 +14,11 @@ export default function SignInPage() {
       })
     } catch (error) {
       console.error('Tracking error:', error)
-      // Silent fail - don't block sign-in if tracking fails
     }
-    
-    // Redirect to GPAI login
-    const returnUrl = encodeURIComponent(`${window.location.origin}/auth/callback`)
-    window.location.href = `https://gpai.app/login?returnUrl=${returnUrl}`
+
+    // For now, redirect to GPAI login since we can't poll for cross-domain cookies
+    // Users will need to manually come back after logging in
+    window.location.href = 'https://gpai.app/login'
   }
 
   return (
@@ -51,7 +32,7 @@ export default function SignInPage() {
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
             <CardDescription className="text-red-600 font-medium">
-              Please sign in with your gpai.app credentials. If you do not have a gpai.app account, please sign up on gpai.app first.
+              Please sign in with your gpai.app credentials. After signing in, navigate back to this site.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 py-8">
