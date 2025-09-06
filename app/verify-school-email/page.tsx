@@ -39,8 +39,8 @@ export default function VerifySchoolEmailPage() {
       if (res.ok) {
         const data = await res.json()
         if (data.verified) {
-          // Already verified, redirect to location selection
-          router.push('/dashboard/location')
+          // Already verified, redirect to dashboard
+          router.push('/dashboard')
           return
         }
       }
@@ -98,9 +98,9 @@ export default function VerifySchoolEmailPage() {
           description: 'Your email has been automatically verified.'
         })
         
-        // Redirect to location selection page after auto-verification
+        // Redirect to dashboard after auto-verification
         setTimeout(() => {
-          window.location.href = '/dashboard/location'
+          window.location.href = '/dashboard'
         }, 1500)
         return
       }
@@ -159,9 +159,9 @@ export default function VerifySchoolEmailPage() {
         description: 'School email verified successfully.'
       })
       
-      // Redirect to location selection page after email verification
+      // Redirect to dashboard with hard refresh to update session
       setTimeout(() => {
-        window.location.href = '/dashboard/location'
+        window.location.href = '/dashboard'
       }, 1000)
       
     } catch (error) {
