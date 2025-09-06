@@ -16,9 +16,10 @@ export default function SignInPage() {
       console.error('Tracking error:', error)
     }
 
-    // For now, redirect to GPAI login since we can't poll for cross-domain cookies
-    // Users will need to manually come back after logging in
-    window.location.href = 'https://gpai.app/login'
+    // Construct the return URL for the GPAI login flow
+    const returnUrl = `${window.location.origin}/auth/callback`;
+    // Redirect to GPAI login with the returnUrl parameter
+    window.location.href = `https://gpai.app/login?returnUrl=${encodeURIComponent(returnUrl)}`;
   }
 
   return (
@@ -31,8 +32,8 @@ export default function SignInPage() {
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-            <CardDescription className="text-red-600 font-medium">
-              Please sign in with your gpai.app credentials. After signing in, navigate back to this site.
+            <CardDescription>
+              You will be redirected to gpai.app to sign in securely.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 py-8">
